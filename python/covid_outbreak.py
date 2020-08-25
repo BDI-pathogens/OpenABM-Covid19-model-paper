@@ -32,7 +32,7 @@ if __name__ == "__main__":
     parser.add_argument("--parameter_line_number", type = int,
         help = "Line number of the parameter file to use for input parameters", default = 1)
 
-    parser.add_argument("--results_dir", type = str, 
+    parser.add_argument("--output_dir", type = str, 
         help = "Directory of results for output files", required = True)
 
     parser.add_argument("--household_demographics_file", type = str,
@@ -63,15 +63,6 @@ if __name__ == "__main__":
         help = "Prefix of timeseries files", default = "covid19_timeseries")
 
     #
-    # app_uptake_multiplier = float(sys.argv[2])
-    # lockdown_multiplier = float(sys.argv[3])
-    # rng_seed = int(sys.argv[6])
-    # dir_name = str(sys.argv[7])
-    #
-    # final_simulation_time = 300
-    #
-    #
-    #
     # params.set_param( "app_users_fraction_0_9",
     #     app_uptake_multiplier * params.get_param( "app_users_fraction_0_9") )
     # params.set_param( "app_users_fraction_10_19",
@@ -92,8 +83,6 @@ if __name__ == "__main__":
     #     app_uptake_multiplier * params.get_param( "app_users_fraction_80") )
     #
     # params.set_param( "self_quarantine_fraction", 0 )
-    # params.set_param( "end_time", final_simulation_time )
-
 
     # ---------------------------------------------------------------------------
     # All remaining parameters are interpreted as parameters native to the model
@@ -115,9 +104,11 @@ if __name__ == "__main__":
     # Set any parameter values that have been passed to the model
     params.set_param_dict(param_dict)
     
+    end_time = params.get_param( "end_time" )
+
     # Instantiate the model/simulation object
     model = simulation.COVID19IBM(model = Model(params))
-    sim = simulation.Simulation(env = model, end_time = params.get_param( "end_time" ) )
+    sim = simulation.Simulation(env = model, end_time = end_time )
     
     # Start the epidemic
     sim.steps(1)
@@ -149,7 +140,7 @@ if __name__ == "__main__":
     sim.env.model.update_running_params("lockdown_occupation_multiplier_elderly_network", 0.29)
     
     el = 0 # elapsed lockdown
-    while el < (lockdown_duration - 7):
+    while el < (args.lockdown_duration - 7):
         sim.steps(1)
         et += 1
         el += 1
@@ -170,7 +161,7 @@ if __name__ == "__main__":
     sim.env.model.update_running_params( "trace_on_symptoms", 0 )
     sim.env.model.update_running_params( "test_on_traced", 0 )
     
-    while el < lockdown_duration:
+    while el < args.lockdown_duration:
         sim.steps(1)
         et += 1
         el += 1
@@ -182,28 +173,30 @@ if __name__ == "__main__":
     sim.env.model.update_running_params("self_quarantine_fraction", 0.8 )
     sim.env.model.update_running_params("lockdown_house_interaction_multiplier", 1)
     
-    sim.env.model.update_running_params("lockdown_random_network_multiplier", lockdown_multiplier)
+    sim.env.model.update_running_params("lockdown_random_network_multiplier", args.lockdown_multiplier)
     sim.env.model.update_running_params("lockdown_occupation_multiplier_primary_network",
-         lockdown_multiplier)
+         args.lockdown_multiplier)
     sim.env.model.update_running_params("lockdown_occupation_multiplier_secondary_network",
-         lockdown_multiplier)
+         args.lockdown_multiplier)
     sim.env.model.update_running_params("lockdown_occupation_multiplier_working_network",
-         lockdown_multiplier)
+         args.lockdown_multiplier)
     sim.env.model.update_running_params("lockdown_occupation_multiplier_retired_network",
-         lockdown_multiplier)
+         args.lockdown_multiplier)
     sim.env.model.update_running_params("lockdown_occupation_multiplier_elderly_network",
-         lockdown_multiplier)
+         args.lockdown_multiplier)
     
     # Turn on shielding of the elderly.  
     sim.env.model.update_running_params("lockdown_occupation_multiplier_retired_network", 0.5)
     sim.env.model.update_running_params("lockdown_occupation_multiplier_elderly_network", 0.5)
     
     # Run until end of simulation
-    while et < final_simulation_time:
+    while et < end_time:
         sim.steps(1)
         et += 1
     
+    # Write output files
     sim.env.model.write_transmissions()
+    sim.env.model.write_individual_file()
     
     timeseries = pd.DataFrame( sim.results )
-    timeseries.to_csv(join(dir_name, "covid_timeseries_Run1.csv"), index = False)
+    timeseries.to_csv(join(args.output_dir, "covid_timeseries_Run1.csv"), index = False)

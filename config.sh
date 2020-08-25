@@ -2,11 +2,15 @@
 # figures from the OpenABM-Covid19 model
 # 
 
+# Name of the directory into which to clone the model
+# name of the release to be cloned
+model_dir="OpenABM-Covid19"
+release="0.3"
 
-results_dir="results"
-input_parameter_file
-household_demographics_file
-
+output_dir="results"
+input_parameter_file="$model_dir/tests/data/baseline_parameters.csv"
+household_demographics_file="$model_dir/tests/data/baseline_household_demographics.csv"
+hospital_file="$model_dir/tests/data/hospital_baseline_parameters.csv"
 
 # Model parameters
 
