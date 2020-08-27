@@ -1,4 +1,5 @@
 .DS_Store
 venv
 results
+__pycache__
 
