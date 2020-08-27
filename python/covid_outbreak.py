@@ -114,6 +114,9 @@ if __name__ == "__main__":
     sim.steps(1)
     et = 1 # record elapsed time
     
+    # Write the interactions file on the first day of the simulation
+    sim.env.model.write_interactions_file()
+    
     # check whether it is time for self-isolation: 0.5% of population infected
     while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) < 0.005 ):
         sim.steps(1)
