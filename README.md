@@ -17,6 +17,13 @@ Histogram of generation time of simulated transmission events stratified by infe
 ![./figures/figure_3.png](./figures/figure_3.png)
 
 
+### Figure 4
+
+Summary of transmission events from a single simulated uncontrolled epidemic stratified by age of both source and recipient and by infectious status of the source of the infection.
+
+![./figures/fig4_transmission_matrix_by_infectiousness.png](./figures/fig4_transmission_matrix_by_infectiousness.png)
+
+
 ### Figure 6
 
 Age-stratified infection fatality ratio as output from a single simulation in a population of 1 million with UK-like demography and control interventions.  
