@@ -17,3 +17,10 @@ Histogram of generation time of simulated transmission events stratified by infe
 ![./figures/figure_3.png](./figures/figure_3.png)
 
 
+### Figure 6
+
+Age-stratified infection fatality ratio as output from a single simulation in a population of 1 million with UK-like demography and control interventions.  
+
+![./figures/fig6_ifr.png](./figures/fig3_ifr.png)
+
+
