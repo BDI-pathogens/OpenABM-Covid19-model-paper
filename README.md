@@ -28,6 +28,6 @@ Summary of transmission events from a single simulated uncontrolled epidemic str
 
 Age-stratified infection fatality ratio as output from a single simulation in a population of 1 million with UK-like demography and control interventions.  
 
-![./figures/fig6_ifr.png](./figures/fig3_ifr.png)
+![./figures/fig6_ifr.png](./figures/fig6_ifr.png)
 
 
