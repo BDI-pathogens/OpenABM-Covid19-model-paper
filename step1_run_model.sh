@@ -14,8 +14,6 @@ python3 python/covid_outbreak.py \
     --lockdown_duration $lockdown_duration \
     --lockdown_prevalence_trigger $lockdown_prevalence_trigger \
     --intervention_self_quarantine_fraction $intervention_self_quarantine_fraction \
-    --rng_seed $rng_seed --n_total 50000
+    --rng_seed $rng_seed --n_total 1000000
 
 deactivate
-
-
