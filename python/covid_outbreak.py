@@ -129,7 +129,7 @@ if __name__ == "__main__":
     sim.env.model.update_running_params( "quarantine_household_on_positive", 1 )
     
     # lockdown on when 2% of population infected
-    while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) <  0.02 ):
+    while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) < 0.02 ):
         sim.steps(1)
         et += 1
     
@@ -148,55 +148,11 @@ if __name__ == "__main__":
         et += 1
         el += 1
     
-    # Turn on app in all scenarios one week prior to the end of lockdown
-    sim.env.model.update_running_params( "app_turned_on", 1 )
-    sim.env.model.update_running_params( "quarantine_on_traced", 1 )
-    sim.env.model.update_running_params( "trace_on_positive", 1 )
-    
-    # Using parameters in line with Scenario 7.1 from app paper
-    # "Trace on test fast: with trace on positive and a fast test turn around"
-    sim.env.model.update_running_params( "test_on_symptoms", 1 )
-    sim.env.model.update_running_params( "quarantine_household_on_positive", 1 )
-    sim.env.model.update_running_params( "quarantine_household_on_traced_positive", 0 )
-    sim.env.model.update_running_params( "quarantine_household_on_traced_symptoms", 0 )
-    sim.env.model.update_running_params( "test_order_wait", 1 )
-    sim.env.model.update_running_params( "test_result_wait", 1 )
-    sim.env.model.update_running_params( "trace_on_symptoms", 0 )
-    sim.env.model.update_running_params( "test_on_traced", 0 )
-    
     while el < args.lockdown_duration:
         sim.steps(1)
         et += 1
         el += 1
-    
-    # lockdown off 
-    last_day_of_lockdown = et
-    
-    # scenarios-independent parameters
-    sim.env.model.update_running_params("self_quarantine_fraction", 0.8 )
-    sim.env.model.update_running_params("lockdown_house_interaction_multiplier", 1)
-    
-    sim.env.model.update_running_params("lockdown_random_network_multiplier", args.lockdown_multiplier)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_primary_network",
-         args.lockdown_multiplier)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_secondary_network",
-         args.lockdown_multiplier)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_working_network",
-         args.lockdown_multiplier)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_retired_network",
-         args.lockdown_multiplier)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_elderly_network",
-         args.lockdown_multiplier)
-    
-    # Turn on shielding of the elderly.  
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_retired_network", 0.5)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_elderly_network", 0.5)
-    
-    # Run until end of simulation
-    while et < end_time:
-        sim.steps(1)
-        et += 1
-    
+    print("Elapsed time:", el)
     # Write output files
     sim.env.model.write_transmissions()
     sim.env.model.write_individual_file()
