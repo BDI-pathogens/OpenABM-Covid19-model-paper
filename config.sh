@@ -1,6 +1,7 @@
+#!/usr/bin/env bash
+# 
 # Configuration file for running scripts for generating 
 # figures from the OpenABM-Covid19 model
-# 
 
 # Name of the directory into which to clone the model
 # name of the release to be cloned
@@ -14,6 +15,7 @@ hospital_file="$model_dir/tests/data/hospital_baseline_parameters.csv"
 
 # Model parameters
 
+n_total=1000000
 lockdown_multiplier=0.29
 app_uptake_multiplier=0.6
 rng_seed=2020
