@@ -18,8 +18,9 @@ df_indiv = pd.read_csv(join("results", "individual_file_Run1.csv"))
 NBINS = 31
 bins = np.arange(NBINS)
 
+plt.rcParams["savefig.format"] = "png"
+
 if __name__ == "__main__":
-    plt.rcParams["savefig.format"] = "pdf"
     plt.rcParams['figure.figsize'] = [6, 4]
     
     #############
