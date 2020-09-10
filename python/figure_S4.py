@@ -63,8 +63,8 @@ if __name__ == "__main__":
     fig, ax = plt.subplots()
     
     ax.plot(times[1:] - lockdown_time, actual_R_means, 
-        label = "R (actual)", 
-        lw = 3, 
+        label = "$R_{actual}$", 
+        lw = 3, alpha = 0.8,
         c = "#CC79A7")
     
     # This will plot a scatter plot of the offspring distribution at each point in time.  
@@ -121,9 +121,9 @@ if __name__ == "__main__":
         R.append(I_t / G)
     
     ax.plot(times[1:] - lockdown_time, R,
-        label = "R (instantaneous)",
-        lw = 3,
-        c = "blue")
+        label = "$R_{instantaneous}$",
+        lw = 3, alpha = 0.8,
+        c = "#0072B2")
 
     plt.legend(frameon = False, fontsize = 14)
     plt.savefig(join("figures", "figS4_actual_R"), dpi = 300)
