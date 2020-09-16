@@ -1,26 +1,16 @@
+#!/usr/bin/env python3
+"""
+Helper functions for plotting
+"""
 
 import numpy as np, pandas as pd
+from scipy.stats import gamma
 
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import cm
 
-
-# network_colours = ["#bdbdbd", "#f0f0f0", "#636363"]
-network_colours = ["#ffffbf", "#fc8d59", "#91bfdb"]
-
-age_colors_greys = ["#ffffff", "#f0f0f0", "#d9d9d9", "#bdbdbd", 
-    "#969696", "#737373", "#525252", "#252525", "#000000"]
-
-#f7fbff
-#deebf7
-#c6dbef
-#9ecae1
-#6baed6
-#4292c6
-#2171b5
-#08519c
-#08306b
+network_colours = ["#D55E00", "#56B4E9", "#009E73"]
 
 # Nicely printed labels of event types from the EVENT_TYPES enum 
 # as defined in OpenABM-Covid19/src/constant.h
@@ -47,6 +37,14 @@ EVENT_TYPE_STRING = {
     19: "N event types"
 }
 
+
+def overlapping_bins(start, stop, window, by):
+    """Generate overlapping bins"""
+    
+    bins = []
+    for i in np.arange(start, stop - window + 1, step = by):
+        bins.append((i, i + window))
+    return(bins)
 
 
 def get_discrete_viridis_colours(n):
@@ -114,30 +112,19 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
     
     n_groups = len(groups)
     
-    if not isinstance(bins, list):
-        if binvar == "age_group":
-            bin_list = np.arange(0, bins + 1) - 0.1
-        else:
-            bin_list = np.arange(bins)
-    else:
-        bin_list = bins
-    
-    if group_colours is None:
-        group_colours = get_discrete_viridis_colours(n_groups)
-    
-    width = np.diff(bin_list)[0]/(n_groups + 1)
+    width = np.diff(bins)[0]/(n_groups + 1)
     
     for i, g in enumerate(groups):
-        heights, b = np.histogram(df.loc[df[groupvar] == g][binvar], bin_list, density = density)
+        heights, b = np.histogram(df.loc[df[groupvar] == g][binvar], bins, density = density)
         
-        ax.bar(bin_list[:-1] + width*i, heights, width = width, facecolor = group_colours[i],
-            label = group_labels[i], edgecolor = "#0d1a26", linewidth = 0.5, zorder = 3)
+        ax.bar(bins[:-1] + width*i, heights, width = width, facecolor = group_colours[i],
+            label = group_labels[i], edgecolor = group_colours[i], linewidth = 0.5, zorder = 3)
     
     ax.set_xlim(xlimits)
     
     legend = ax.legend(loc = 'best', borderaxespad = 0, frameon = False, 
-        prop = {'size': 16}, fontsize = "x-large")
-    legend.set_title(legend_title, prop = {'size':18})
+        prop = {'size': 12}, fontsize = "large")
+    legend.set_title(legend_title, prop = {'size':14})
     
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -146,18 +133,19 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
     ax.set_ylabel(ylabel, size = 18)
     ax.set_title(title, size = 20)
     
+    ax.set_yticks([0, 150000, 300000])
+    
     if xlimits is not None:
         ax.set_xlim(xlimits)
     
     if xticklabels is not None:
-        ax.set_xticks(bin_list + n_groups/2*width - width/2.)
-        ax.set_xticklabels(xticklabels, size = 14)
+        ax.set_xticks([0, 10, 20, 30])
     
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(14)
     
     for tick in ax.yaxis.get_major_ticks():
-        tick.label.set_fontsize(14)
+        tick.label.set_fontsize(10)
     
     return(ax)
 
@@ -278,7 +266,8 @@ def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None,
     
     fig, ax = plt.subplots()
     
-    ax, im = add_heatmap_to_axes(ax, df[group1var].values, df[group2var].values, bin_list)
+    ax, im = add_heatmap_to_axes(ax, df[group1var].values, df[group2var].values, bin_list, 
+        vmin = vmin, vmax = vmax)
     
     ax = adjust_ticks(ax, xtick_fontsize = 16, ytick_fontsize = 16, 
         xticklabels = xticklabels, yticklabels = yticklabels)
@@ -294,7 +283,7 @@ def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None,
     return(fig, ax)
 
 
-def add_heatmap_to_axes(ax, x, y, bin_list):
+def add_heatmap_to_axes(ax, x, y, bin_list, vmin, vmax):
     """
     Plot heatmap of 2D histogram.
     
@@ -323,7 +312,7 @@ def add_heatmap_to_axes(ax, x, y, bin_list):
     array, xbins, ybins = np.histogram2d(x, y, bin_list)
     
     im = ax.imshow(np.ma.masked_where(array == 0, array), 
-        origin = "lower", aspect = "equal", vmin = 0)
+        origin = "lower", aspect = "equal", vmin = vmin, vmax = vmax)
     
     return(ax, im)
 
@@ -368,3 +357,322 @@ def adjust_ticks(ax, xtick_fontsize = 12, ytick_fontsize = 12,
 
 
 
+def PlotHistIFRByAge(df, 
+        numerator_var, denominator_var,
+        age_group_var = "age_group",
+        NBINS = None,
+        group_labels = None,
+        xlabel = "",
+        ylabel = "Infection fatality ratio (IFR)",
+        xticklabels = None,
+        density = False,
+    ):
+    """
+    Plot IFR by age.  
+    """
+    
+    a = 1.0
+    bins = np.arange(0, NBINS + 1) - 0.1
+    n_age = len(np.unique(df[age_group_var]))
+    
+    fig, ax = plt.subplots()
+    
+    height_n, bins_n = np.histogram(df[df[numerator_var] > 0][age_group_var], 
+        bins, density = False)
+    height_d, bins_d = np.histogram(df[df[denominator_var] > 0][age_group_var], 
+        bins, density = False)
+    
+    heights = np.divide(height_n, height_d)
+    
+    ax.bar(range(n_age), heights, align = "center",
+             alpha = a, color = "#0072B2", edgecolor = "#0d1a26", linewidth = 0.5,
+             zorder = 3)
+    
+    for bi in range(n_age):
+        ax.text(bi, heights[bi], str(np.round(heights[bi], 2)), 
+            ha = "center", va = "bottom", color = "grey")
+    
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    
+    ax.set_xlim([-0.5, np.max(bins)+0.5])
+    ax.set_ylim([0, np.max(heights)*1.1])
+    
+    if xticklabels is not None:
+        ax.set_xticks(bins)
+        ax.set_xticklabels(xticklabels, size = 12)
+    
+    ax.set_xlabel(xlabel, size = 18)
+    ax.set_ylabel(ylabel, size = 18)
+    
+    overall_ifr = height_n.sum()/height_d.sum()
+    ax.text(0.05, 0.8, "Overall IFR: {}".format(np.round(overall_ifr, 4)), size = 18, 
+        ha = 'left', va = 'center', transform = ax.transAxes, color = "black")
+    
+    return(fig, ax)
+
+
+
+
+
+def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
+    """
+    Plot distributions of mean transition times between compartments in the parameters of the 
+    OpenABM-Covid19 model
+    
+    Arguments
+    ---------
+    df_parameters : pandas.DataFrame
+        DataFrame of parameter values as input first input argument to the OpenABM-Covid19 model
+        This plotting scripts expects the following columns within this dataframe: 
+            mean_time_to_hospital
+            mean_time_to_critical, sd_time_to_critical
+            mean_time_to_symptoms, sd_time_to_symptoms
+            mean_infectious_period, sd_infectious_period
+            mean_time_to_recover, sd_time_to_recover
+            mean_asymptomatic_to_recovery, sd_asymptomatic_to_recovery
+            mean_time_hospitalised_recovery, sd_time_hospitalised_recovery
+            mean_time_to_death, sd_time_to_death
+            mean_time_critical_survive, sd_time_critical_survive
+    
+    xlimits : list of ints
+        Limits of x axis of gamma distributions showing mean transition times
+    lw : float
+        Line width used in plotting lines of the PDFs
+    
+    Returns
+    -------
+    fig, ax : figure and axis handles to the generated figure using matplotlib.pyplot
+    """
+    df = df_parameters # for brevity
+    x = np.linspace(xlimits[0], xlimits[1], num = 50)
+    
+    fig, ax = plt.subplots(nrows = 3, ncols = 3)
+    
+    ####################################
+    # Bernoulli of mean time to hospital
+    ####################################
+    
+    height1 = np.ceil(df.mean_time_to_hospital.values[0]) - df.mean_time_to_hospital.values[0]
+    height2 = df.mean_time_to_hospital.values[0] - np.floor(df.mean_time_to_hospital.values[0])
+    
+    x1 = np.floor(df.mean_time_to_hospital.values[0])
+    x2 = np.ceil(df.mean_time_to_hospital.values[0])
+    ax[0,0].bar([x1, x2], [height1, height2], color = "#0072B2")
+    
+    ax[0,0].set_ylim([0, 1.0])
+    ax[0,0].set_xticks([x1, x2])
+    ax[0,0].set_xlabel("Time to hospital\n(from symptoms; days)")
+    ax[0,0].set_ylabel("Density")
+    ax[0,0].set_title("")
+    ax[0,0].spines["top"].set_visible(False)
+    ax[0,0].spines["right"].set_visible(False)
+    
+    ####################################
+    # Gamma of mean time to critical
+    ####################################
+    
+    a, b = gamma_params(df.mean_time_to_critical.values, df.sd_time_to_critical.values)
+    ax[1,0].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[1,0].axvline(df.mean_time_to_critical.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[1,0].set_xlabel("Time to critical\n(from hospitalised; days)")
+    ax[1,0].set_title("")
+    ax[1,0].spines["top"].set_visible(False)
+    ax[1,0].spines["right"].set_visible(False)
+    ax[1,0].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_critical.values[0],
+        df.sd_time_to_critical.values[0]), 
+        ha = 'right', va = 'center', transform = ax[1,0].transAxes)
+    
+    
+    ################################
+    # Gamma of mean time to symptoms
+    ################################
+    
+    a, b = gamma_params(df.mean_time_to_symptoms.values, df.sd_time_to_symptoms.values)
+    ax[0,1].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[0,1].axvline(df.mean_time_to_symptoms.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[0,1].set_xlabel("Time to symptoms\n(from presymptomatic; days)")
+    ax[0,1].set_title("")
+    ax[0,1].spines["top"].set_visible(False)
+    ax[0,1].spines["right"].set_visible(False)
+    ax[0,1].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_symptoms.values[0],
+        df.sd_time_to_symptoms.values[0]), 
+        ha = 'right', va = 'center', transform = ax[0,1].transAxes)
+    
+    ################################
+    # Gamma of mean infectious period
+    ################################
+    
+    a, b = gamma_params(df.mean_infectious_period, df.sd_infectious_period)
+    ax[0,2].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[0,2].axvline(df.mean_infectious_period.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[0,2].set_xlabel("Infectious period (days)")
+    ax[0,2].set_title("")
+    ax[0,2].spines["top"].set_visible(False)
+    ax[0,2].spines["right"].set_visible(False)
+    ax[0,2].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_infectious_period.values[0],
+        df.sd_infectious_period.values[0]), 
+        ha = 'right', va = 'center', transform = ax[0,2].transAxes)
+    
+    ################################
+    # Gamma of mean time to recover
+    ################################
+    
+    a, b = gamma_params(df.mean_time_to_recover, df.sd_time_to_recover)
+    ax[1,1].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[1,1].axvline(df.mean_time_to_recover.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[1,1].set_xlabel("Time to recover\n(from hospitalised or critical; days)")
+    ax[1,1].set_title("")
+    ax[1,1].spines["top"].set_visible(False)
+    ax[1,1].spines["right"].set_visible(False)
+    ax[1,1].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_recover.values[0],
+        df.sd_time_to_recover.values[0]), 
+        ha = 'right', va = 'center', transform = ax[1,1].transAxes)
+    
+    ########################################
+    # Gamma of mean asymptomatic to recovery
+    ########################################
+    
+    a, b = gamma_params(df.mean_asymptomatic_to_recovery, df.sd_asymptomatic_to_recovery)
+    ax[2,0].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[2,0].axvline(df.mean_asymptomatic_to_recovery.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[2,0].set_xlabel("Time to recover\n(from asymptomatic; days)")
+    ax[2,0].set_title("")
+    ax[2,0].spines["top"].set_visible(False)
+    ax[2,0].spines["right"].set_visible(False)
+    ax[2,0].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_asymptomatic_to_recovery.values[0],
+        df.sd_asymptomatic_to_recovery.values[0]), 
+        ha = 'right', va = 'center', transform = ax[2,0].transAxes)
+    
+    ########################################
+    # Gamma of mean hospitalised to recovery
+    ########################################
+    
+    a, b = gamma_params(df.mean_time_hospitalised_recovery, df.sd_time_hospitalised_recovery)
+    ax[2,1].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[2,1].axvline(df.mean_time_hospitalised_recovery.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[2,1].set_xlabel("Time to recover\n(from hospitalisation to hospital discharge if not ICU\nor from ICU discharge to hospital discharge if ICU; days)")
+    ax[2,1].set_title("")
+    ax[2,1].spines["top"].set_visible(False)
+    ax[2,1].spines["right"].set_visible(False)
+    ax[2,1].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_hospitalised_recovery.values[0],
+        df.sd_time_hospitalised_recovery.values[0]), 
+        ha = 'right', va = 'center', transform = ax[2,1].transAxes)
+    
+    #############################
+    # Gamma of mean time to death
+    #############################
+    
+    a, b = gamma_params(df.mean_time_to_death.values, df.sd_time_to_death.values)
+    ax[1,2].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, c = "#0072B2")
+    ax[1,2].axvline(df.mean_time_to_death.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[1,2].set_xlabel("Time to death\n(from critical; days)")
+    ax[1,2].set_title("")
+    ax[1,2].spines["top"].set_visible(False)
+    ax[1,2].spines["right"].set_visible(False)
+    ax[1,2].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_death.values[0],
+        df.sd_time_to_death.values[0]), 
+        ha = 'right', va = 'center', transform = ax[1,2].transAxes)
+    
+    ########################################
+    # Gamma of mean time to survive if critical: FIXME - definitions
+    ########################################
+    
+    a, b = gamma_params(df.mean_time_critical_survive, df.sd_time_critical_survive)
+    ax[2,2].plot(x, gamma.pdf(x, a = a, loc = 0, scale = b), linewidth= lw, color = "#0072B2")
+    ax[2,2].axvline(df.mean_time_critical_survive.values, color = "#D55E00", 
+        linestyle = "dashed", alpha = 0.7)
+    ax[2,2].set_xlabel("Time to survive\n(if ICU; days)")
+    ax[2,2].set_title("")
+    ax[2,2].spines["top"].set_visible(False)
+    ax[2,2].spines["right"].set_visible(False)
+    ax[2,2].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_critical_survive.values[0],
+        df.sd_time_critical_survive.values[0]), 
+        ha = 'right', va = 'center', transform = ax[2,2].transAxes)
+    
+    plt.subplots_adjust(hspace = 0.5)
+    
+    return(fig, ax)
+
+
+def gamma_params(mn, sd):
+    """
+    Return scale and shape parameters from a Gamma distribution from input mean and sd
+    
+    Arguments
+    ---------
+    mn : float
+        Mean of the gamma distribution
+    sd : float
+        Standard deviation of the gamma distribution
+    """
+    scale = (sd**2)/mn
+    shape = mn/scale
+    
+    return(shape, scale)
+
+
+def PlotHistByAge(df, 
+        groupvars, 
+        age_group_var = "age_group",
+        NBINS = None,
+        group_labels = None,
+        xlabel = "",
+        xticklabels = None,
+        density = False,
+        ylim = 0.5
+    ):
+    """
+    
+    """
+    
+    a = 1.0
+    bins = np.arange(0, NBINS + 1) - 0.1
+    
+    # Define number of groups
+    n_groups = len(groupvars)
+    
+    if group_labels is None:
+        group_labels = groupvars
+    
+    fig, ax = plt.subplots(nrows = n_groups)
+    
+    for axi, var in enumerate(groupvars):
+        height, bins, objs = ax[axi].hist(df[df[var] > 0][age_group_var], bins, width = 0.8, 
+            alpha = a, color = "#0072B2", edgecolor = "#0d1a26", linewidth = 0.5, 
+            zorder = 3, density = density)
+        
+        for bi in range(len(bins) - 1):
+            ax[axi].text(bins[bi] + 0.425, height[bi], str(np.round(height[bi], 2)), 
+                ha = "center", va = "bottom", color = "grey", size = 12)
+        
+        ax[axi].set_xlim([0, np.max(bins)])
+        ax[axi].spines["top"].set_visible(False)
+        ax[axi].spines["right"].set_visible(False)
+        ax[axi].set_ylim([0, ylim])
+        ax[axi].text(0.02, 0.8, group_labels[axi], size = 18, 
+            ha = 'left', va = 'center', transform = ax[axi].transAxes, color = "black")
+        
+        if axi == (n_groups - 1):
+            if xticklabels is not None:
+                ax[axi].set_xticks(bins + 0.425)
+                ax[axi].set_xticklabels(xticklabels, size = 12)
+            else:
+                ax[axi].set_xticks(bins + 0.425)
+                ax[axi].set_xticklabels(bins, size = 12)
+        else:
+            ax[axi].set_xticks(bins + 0.425)
+            ax[axi].set_xticks([])
+    
+    ax[n_groups-1].set_xlabel(xlabel, size = 18)
+    
+    plt.subplots_adjust(hspace = 0.5)
+    
+    return(fig, ax)
