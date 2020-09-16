@@ -355,8 +355,6 @@ def adjust_ticks(ax, xtick_fontsize = 12, ytick_fontsize = 12,
     return(ax)
 
 
-
-
 def PlotHistIFRByAge(df, 
         numerator_var, denominator_var,
         age_group_var = "age_group",
@@ -390,7 +388,7 @@ def PlotHistIFRByAge(df,
     
     for bi in range(n_age):
         ax.text(bi, heights[bi], str(np.round(heights[bi], 2)), 
-            ha = "center", va = "bottom", color = "grey")
+            ha = "center", va = "bottom", color = "grey", size = 14)
     
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -399,8 +397,11 @@ def PlotHistIFRByAge(df,
     ax.set_ylim([0, np.max(heights)*1.1])
     
     if xticklabels is not None:
-        ax.set_xticks(bins)
-        ax.set_xticklabels(xticklabels, size = 12)
+        ax.set_xticks(bins[:-1])
+        ax.set_xticklabels(xticklabels, size = 16)
+    
+    ax.set_yticks([0.0, 0.02, 0.04, 0.06, 0.08, 0.1])
+    ax.set_yticklabels([0.0, 0.02, 0.04, 0.06, 0.08, 0.1], size = 16)
     
     ax.set_xlabel(xlabel, size = 18)
     ax.set_ylabel(ylabel, size = 18)
@@ -410,9 +411,6 @@ def PlotHistIFRByAge(df,
         ha = 'left', va = 'center', transform = ax.transAxes, color = "black")
     
     return(fig, ax)
-
-
-
 
 
 def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
