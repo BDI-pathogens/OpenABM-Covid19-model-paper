@@ -7,14 +7,11 @@ Histogram of generation time of transmission events stratified by infectious sta
 
 from os.path import join
 
-import pandas as pd, numpy as np
+import pandas as pd, numpy as np, sys
 from matplotlib import pyplot as plt
 
 import plotting
 from COVID19.model import AgeGroupEnum, EVENT_TYPES, TransmissionTypeEnum, OccupationNetworkEnum
-
-plt.rcParams['figure.figsize'] = [10, 10]
-
 
 infectious_compartments = ["PRESYMPTOMATIC", "PRESYMPTOMATIC_MILD", \
     "ASYMPTOMATIC", "SYMPTOMATIC", "SYMPTOMATIC_MILD"]
@@ -25,8 +22,14 @@ infectious_labels = [plotting.EVENT_TYPE_STRING[e.value] for e in EVENT_TYPES if
 
 if __name__ == "__main__":
     
-    df_trans = pd.read_csv(join("results", "transmission_Run1.csv"))
-    df_ts = pd.read_csv(join("results", "covid_timeseries_Run1.csv"))
+    transmission_file = sys.argv[1]
+    timeseries_file = sys.argv[2]
+    output_file = sys.argv[3]
+    
+    df_trans = pd.read_csv(transmission_file)
+    df_ts = pd.read_csv(timeseries_file)
+    
+    plt.rcParams['figure.figsize'] = [10, 10]
     
     # # Find lockdown time (in simulation time)
     # lockdown_start = np.min(df_ts.loc[df_ts.lockdown == 1]["time"])
@@ -74,6 +77,5 @@ if __name__ == "__main__":
         if i ==0:
             ax[i].set_title("", size = 20)
 
-    plt.savefig(join("figures", "figure_3.png"))
+    plt.savefig(output_file)
     plt.close()
-
