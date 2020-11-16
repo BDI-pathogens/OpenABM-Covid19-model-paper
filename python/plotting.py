@@ -361,7 +361,7 @@ def adjust_ticks(ax, xtick_fontsize = 12, ytick_fontsize = 12,
     return(ax)
 
 
-def PlotHistIFRByAge(df, 
+def ifr_hist_by_age(df, 
         numerator_var, denominator_var,
         age_group_var = "age_group",
         NBINS = None,
@@ -372,11 +372,10 @@ def PlotHistIFRByAge(df,
         density = False,
     ):
     """
-    Plot IFR by age.  
+    Plot IFR by age
     """
     
-    a = 1.0
-    bins = np.arange(0, NBINS + 1) - 0.1
+    bins = np.arange(0, NBINS + 1) - 0.5
     n_age = len(np.unique(df[age_group_var]))
     
     fig, ax = plt.subplots()
@@ -388,18 +387,11 @@ def PlotHistIFRByAge(df,
     
     heights = np.divide(height_n, height_d)
     
-    ax.bar(range(n_age), heights, align = "center",
-             alpha = a, color = "#0072B2", edgecolor = "#0d1a26", linewidth = 0.5,
-             zorder = 3)
-    
-    for bi in range(n_age):
-        ax.text(bi, heights[bi], str(np.round(heights[bi], 2)), 
-            ha = "center", va = "bottom", color = "grey", size = 14)
+    bar_width = 0.8
+    ax.bar(bins[:-1], heights, align = "center", color = "#0072B2", 
+        edgecolor = "#0d1a26", linewidth = 0.5, zorder = 3, width = bar_width)
     
     remove_spines(ax, ["top", "right"])
-    
-    ax.set_xlim([-0.5, np.max(bins)+0.5])
-    ax.set_ylim([0, np.max(heights)*1.1])
     
     if xticklabels is not None:
         ax.set_xticks(bins[:-1])
@@ -408,12 +400,11 @@ def PlotHistIFRByAge(df,
     ax.set_yticks([0.0, 0.02, 0.04, 0.06, 0.08, 0.1])
     ax.set_yticklabels([0.0, 0.02, 0.04, 0.06, 0.08, 0.1], size = 16)
     
+    ax.set_xlim([-1, np.max(bins)])
+    ax.set_ylim([0, np.max(heights)*1.1])
+    
     ax.set_xlabel(xlabel, size = 18)
     ax.set_ylabel(ylabel, size = 18)
-    
-    overall_ifr = height_n.sum()/height_d.sum()
-    ax.text(0.05, 0.8, "Overall IFR: {}".format(np.round(overall_ifr, 4)), size = 18, 
-        ha = 'left', va = 'center', transform = ax.transAxes, color = "black")
     
     return(fig, ax)
 
