@@ -9,6 +9,7 @@ from scipy.stats import gamma
 import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import cm
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 network_colours = ["#D55E00", "#56B4E9", "#009E73"]
 
@@ -126,9 +127,8 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
         prop = {'size': 12}, fontsize = "large")
     legend.set_title(legend_title, prop = {'size':14})
     
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
+    remove_spines(ax, ["top", "right"])
+    
     ax.set_xlabel(xlabel, size = 18)
     ax.set_ylabel(ylabel, size = 18)
     ax.set_title(title, size = 20)
@@ -159,7 +159,8 @@ def transmission_heatmap_by_age_by_panels(df,
         legend_title = "", legend_loc = "right",
         xticklabels = None, yticklabels = None,
         normalise = False, title_fontsize = 20,
-        spines = False, ncols = None, nrows = None
+        spines = False, ncols = None, nrows = None, 
+        vmin_panels = None, vmax_panels = None
     ):
     """
     Plot subplots of heatmaps of transmissions from one age group to another across another 
@@ -197,7 +198,8 @@ def transmission_heatmap_by_age_by_panels(df,
     
     fig, ax = plt.subplots(ncols = ncols, nrows = nrows)
     
-    ax[0].set_ylabel(ylabel, size = 16)
+    ax[0][0].set_ylabel(ylabel, size = 16)
+    ax[1][0].set_ylabel(ylabel, size = 16)
     
     transmission_arrays = []
     for i, panel in enumerate(panels):
@@ -210,41 +212,45 @@ def transmission_heatmap_by_age_by_panels(df,
             bins = bin_list)
         transmission_arrays.append(array)
     
-    vmin_panels = 0
-    vmax_panels = np.max(np.array(transmission_arrays))
+    if not vmin_panels:
+        vmin_panels = 1
+    if not vmax_panels:
+        vmax_panels = np.max(np.array(transmission_arrays))
     
     ims = []
-
-    for i, panel in enumerate(panels):
-        im = ax[i].imshow(np.ma.masked_where(transmission_arrays[i] == 0, transmission_arrays[i]), 
+    
+    for i, (panel, axi) in enumerate(zip(panels, ax.reshape(-1))):
+        im = axi.imshow(np.ma.masked_where(transmission_arrays[i] == 0, transmission_arrays[i]), 
             origin = "lower", aspect = "equal", 
             vmin = vmin_panels, vmax = vmax_panels)
         
         ims.append(im)
-        ax[i] = adjust_ticks(ax[i], xtick_fontsize = 14, ytick_fontsize = 14, 
+        axi = adjust_ticks(axi, xtick_fontsize = 14, ytick_fontsize = 14, 
             xticklabels = xticklabels, yticklabels = yticklabels)
         
         if i > 0:
-            ax[i].set_yticks([])
+            axi.set_yticks([])
         
-        ax[i].set_xlabel(xlabel, size = 16)
-        ax[i].set_title(panel_labels[i], size = title_fontsize)
+        axi.set_xlabel(xlabel, size = 16)
+        axi.set_title(panel_labels[i], size = title_fontsize)
         
         if not spines:
-            ax[i].spines["top"].set_visible(False)
-            ax[i].spines["right"].set_visible(False)
-            ax[i].spines["bottom"].set_visible(False)
-            ax[i].spines["left"].set_visible(False)
+            remove_spines(axi)
     
-    fig.subplots_adjust(right = 0.85)
-    axes_cbar = fig.add_axes([0.9, 0.3, 0.02, 0.4])
-    cbar = fig.colorbar(ims[n_panels - 1], cax = axes_cbar)
+    # Start ticks from 1 (0 is shown in white)
+    cbar_ticks = np.arange(200, 1600, 200)
+    cbar_ticks = np.insert(cbar_ticks, 0, 1)
     
+    remove_spines(ax[1,2])
+    ax[1,2].set_xticks([]); ax[1,2].set_yticks([])
+    
+    cbaxes = inset_axes(ax[1, 2], width = "10%", height = "75%", loc = "lower left", 
+        bbox_to_anchor = (0.35, 0.1, 1, 1), bbox_transform = ax[1, 2].transAxes)
+    
+    cbar = fig.colorbar(ims[n_panels - 1], ticks = cbar_ticks, cax = cbaxes, shrink = 0.6)
     cbar.set_label(legend_title, size = 18)
     
     return(fig, ax)
-
-
 
 
 def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None, 
@@ -390,8 +396,7 @@ def PlotHistIFRByAge(df,
         ax.text(bi, heights[bi], str(np.round(heights[bi], 2)), 
             ha = "center", va = "bottom", color = "grey", size = 14)
     
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
+    remove_spines(ax, ["top", "right"])
     
     ax.set_xlim([-0.5, np.max(bins)+0.5])
     ax.set_ylim([0, np.max(heights)*1.1])
@@ -463,8 +468,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
     ax[0,0].set_xlabel("Time to hospital\n(from symptoms; days)")
     ax[0,0].set_ylabel("Density")
     ax[0,0].set_title("")
-    ax[0,0].spines["top"].set_visible(False)
-    ax[0,0].spines["right"].set_visible(False)
+    remove_spines(ax[0,0], ["top", "right"])
     
     ####################################
     # Gamma of mean time to critical
@@ -476,8 +480,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[1,0].set_xlabel("Time to critical\n(from hospitalised; days)")
     ax[1,0].set_title("")
-    ax[1,0].spines["top"].set_visible(False)
-    ax[1,0].spines["right"].set_visible(False)
+    remove_spines(ax[1,0], ["top", "right"])
     ax[1,0].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_critical.values[0],
         df.sd_time_to_critical.values[0]), 
         ha = 'right', va = 'center', transform = ax[1,0].transAxes)
@@ -493,8 +496,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[0,1].set_xlabel("Time to symptoms\n(from presymptomatic; days)")
     ax[0,1].set_title("")
-    ax[0,1].spines["top"].set_visible(False)
-    ax[0,1].spines["right"].set_visible(False)
+    remove_spines(ax[0, 1], ["top", "right"])
     ax[0,1].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_symptoms.values[0],
         df.sd_time_to_symptoms.values[0]), 
         ha = 'right', va = 'center', transform = ax[0,1].transAxes)
@@ -509,8 +511,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[0,2].set_xlabel("Infectious period (days)")
     ax[0,2].set_title("")
-    ax[0,2].spines["top"].set_visible(False)
-    ax[0,2].spines["right"].set_visible(False)
+    remove_spines(ax[0, 2], ["top", "right"])
     ax[0,2].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_infectious_period.values[0],
         df.sd_infectious_period.values[0]), 
         ha = 'right', va = 'center', transform = ax[0,2].transAxes)
@@ -525,8 +526,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[1,1].set_xlabel("Time to recover\n(from hospitalised or critical; days)")
     ax[1,1].set_title("")
-    ax[1,1].spines["top"].set_visible(False)
-    ax[1,1].spines["right"].set_visible(False)
+    remove_spines(ax[1, 1], ["top", "right"])
     ax[1,1].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_recover.values[0],
         df.sd_time_to_recover.values[0]), 
         ha = 'right', va = 'center', transform = ax[1,1].transAxes)
@@ -541,8 +541,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[2,0].set_xlabel("Time to recover\n(from asymptomatic; days)")
     ax[2,0].set_title("")
-    ax[2,0].spines["top"].set_visible(False)
-    ax[2,0].spines["right"].set_visible(False)
+    remove_spines(ax[2, 0], ["top", "right"])
     ax[2,0].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_asymptomatic_to_recovery.values[0],
         df.sd_asymptomatic_to_recovery.values[0]), 
         ha = 'right', va = 'center', transform = ax[2,0].transAxes)
@@ -557,8 +556,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[2,1].set_xlabel("Time to recover\n(from hospitalisation to hospital discharge if not ICU\nor from ICU discharge to hospital discharge if ICU; days)")
     ax[2,1].set_title("")
-    ax[2,1].spines["top"].set_visible(False)
-    ax[2,1].spines["right"].set_visible(False)
+    remove_spines(ax[2, 1], ["top", "right"])
     ax[2,1].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_hospitalised_recovery.values[0],
         df.sd_time_hospitalised_recovery.values[0]), 
         ha = 'right', va = 'center', transform = ax[2,1].transAxes)
@@ -573,8 +571,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[1,2].set_xlabel("Time to death\n(from critical; days)")
     ax[1,2].set_title("")
-    ax[1,2].spines["top"].set_visible(False)
-    ax[1,2].spines["right"].set_visible(False)
+    remove_spines(ax[1, 2], ["top", "right"])
     ax[1,2].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_to_death.values[0],
         df.sd_time_to_death.values[0]), 
         ha = 'right', va = 'center', transform = ax[1,2].transAxes)
@@ -589,8 +586,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
         linestyle = "dashed", alpha = 0.7)
     ax[2,2].set_xlabel("Time to survive\n(if ICU; days)")
     ax[2,2].set_title("")
-    ax[2,2].spines["top"].set_visible(False)
-    ax[2,2].spines["right"].set_visible(False)
+    remove_spines(ax[2, 2], ["top", "right"])
     ax[2,2].text(0.9, 0.7, 'mean: {}\nsd: {}'.format(df.mean_time_critical_survive.values[0],
         df.sd_time_critical_survive.values[0]), 
         ha = 'right', va = 'center', transform = ax[2,2].transAxes)
@@ -652,8 +648,8 @@ def PlotHistByAge(df,
                 ha = "center", va = "bottom", color = "grey", size = 12)
         
         ax[axi].set_xlim([0, np.max(bins)])
-        ax[axi].spines["top"].set_visible(False)
-        ax[axi].spines["right"].set_visible(False)
+        remove_spines(ax[axi], ["top", "right"])
+        
         ax[axi].set_ylim([0, ylim])
         ax[axi].text(0.02, 0.8, group_labels[axi], size = 18, 
             ha = 'left', va = 'center', transform = ax[axi].transAxes, color = "black")
@@ -674,3 +670,8 @@ def PlotHistByAge(df,
     plt.subplots_adjust(hspace = 0.5)
     
     return(fig, ax)
+
+
+def remove_spines(ax, locations = ["top", "right", "bottom", "left"]):
+    for loc in locations:
+        ax.spines[loc].set_visible(False)
