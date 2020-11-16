@@ -6,8 +6,7 @@ Transmission matrix stratified by age of source and recipient and infectious sta
 """
 
 from os.path import join
-
-import pandas as pd, numpy as np
+import pandas as pd, numpy as np, sys
 from matplotlib import pyplot as plt
 
 import plotting
@@ -17,18 +16,30 @@ age_group_labels = [enum.name[1:].replace("_","-") for enum in AgeGroupEnum]
 age_group_labels[-1] = "80+"
 n_age = len(age_group_labels)
 
-infectious_compartments = ["PRESYMPTOMATIC", "PRESYMPTOMATIC_MILD", \
-    "ASYMPTOMATIC", "SYMPTOMATIC", "SYMPTOMATIC_MILD"]
+infectious_compartments = [ \
+    "PRESYMPTOMATIC", 
+    "PRESYMPTOMATIC_MILD", \
+    "ASYMPTOMATIC", \
+    "SYMPTOMATIC", \
+    "SYMPTOMATIC_MILD"]
+
 infectious_types = [e.value for e in EVENT_TYPES if e.name in infectious_compartments]
 infectious_names = [e.name for e in EVENT_TYPES if e.name in infectious_compartments]
-infectious_labels = [plotting.EVENT_TYPE_STRING[e.value] for e in EVENT_TYPES if e.name in infectious_compartments]
+infectious_labels = [\
+    plotting.EVENT_TYPE_STRING[e.value] \
+    for e in EVENT_TYPES \
+    if e.name in infectious_compartments\
+]
 
 
 if __name__ == "__main__":
-
+    
+    transmission_file = sys.argv[1]
+    output_figure = sys.argv[2]
+    
     plt.rcParams['figure.figsize'] = [20, 8]
     
-    df_trans = pd.read_csv(join("results", "transmission_Run1.csv"))
+    df_trans = pd.read_csv(transmission_file)
     
     fig, ax = plotting.transmission_heatmap_by_age_by_panels(
         df_trans, "age_group_recipient", "age_group_source", bins = n_age,
@@ -39,5 +50,5 @@ if __name__ == "__main__":
         xticklabels = age_group_labels, yticklabels = age_group_labels,
         title_fontsize = 16, spines = True)
 
-    plt.savefig(join("figures", "fig4_transmission_matrix_by_infectiousness"))
+    plt.savefig(output_figure)
     plt.close()
