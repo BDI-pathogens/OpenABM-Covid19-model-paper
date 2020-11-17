@@ -8,7 +8,10 @@
 # figure 1 is a schematic of networks
 
 figure2:
-	python python/figure_2.py
+	python python/figure_2.py \
+		"results/interactions_Run1.csv" \
+		"results/individual_file_Run1.csv" \
+		"figures"
 
 figure3:
 	python python/transmission_heatmap_by_age_by_infectiousness.py \
