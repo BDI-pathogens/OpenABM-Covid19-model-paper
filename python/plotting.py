@@ -85,7 +85,8 @@ def get_discrete_viridis_colours(n):
 
 def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None, 
     group_labels = None, group_colours = None, xlimits = None, density = False, 
-    title = "", xlabel = "", ylabel = "", legend_title = "", xticklabels = None):
+    title = "", xlabel = "", ylabel = "", legend_title = "", xticklabels = None, 
+    normalising_constant = None):
     """
     Histogram with multiple groups, with histogram bars plotted side-by-side for each group
     
@@ -116,6 +117,8 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
         Title, X-axis label, Y-axis label, and legend title respectively
      xticklabels : list of str
         Labels to use for x-ticks
+    normalising_constant: float
+        Normalising constant (in case plotting by fraction of population is required)
     
     Returns
     -------
@@ -135,6 +138,9 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
     for i, g in enumerate(groups):
         heights, b = np.histogram(df.loc[df[groupvar] == g][binvar], bins, density = density)
         
+        if normalising_constant:
+            heights = heights/float(normalising_constant)
+        
         ax.bar(bins[:-1] + width*i, heights, width = width, facecolor = group_colours[i],
             label = group_labels[i], edgecolor = group_colours[i], linewidth = 0.5, zorder = 3)
     
@@ -150,7 +156,7 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
     ax.set_ylabel(ylabel, size = 18)
     ax.set_title(title, size = 20)
     
-    ax.set_yticks([0, 150000, 300000])
+    #ax.set_yticks([0, 150000, 300000])
     
     if xlimits is not None:
         ax.set_xlim(xlimits)
