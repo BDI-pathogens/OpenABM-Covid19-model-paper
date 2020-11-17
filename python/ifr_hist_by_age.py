@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to create figure 6
-
-Overall IFR, stratified by age
-
+Bar chart of infection fatality ratio (IFR) stratified by age
 """
 
 from os.path import join
