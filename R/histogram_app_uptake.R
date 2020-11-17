@@ -13,10 +13,11 @@ library(reshape2)
 # Read input parameters
 args <- commandArgs(trailingOnly = TRUE)
 app_uptake <- as.numeric(args[1])
+input_parameter_file <- args[2]
+output_file <- args[3]
 
 # Read data
-input_dir <- file.path("OpenABM-Covid19", "tests", "data")
-df <- read.csv(file.path(input_dir, "baseline_parameters_transpose.csv"), stringsAsFactors = F)
+df <- read.csv(file.path(input_parameter_file), stringsAsFactors = F)
 
 # Pull out parameters of interest
 params <- with(df, Name)
@@ -47,7 +48,4 @@ p <- ggplot(df_long, aes(x = age, y = value/1E6, fill = variable)) +
         labels = c("Total population", "with smartphones", 
             paste0("with app (", app_uptake*100, "% uptake)")))
 
-ggsave(filename = file.path("figures", "histogram_app_uptake.png"), 
-    plot = p, 
-    width = 12, 
-    height = 6)
+ggsave(filename = file.path(output_file), plot = p, width = 12, height = 6)
