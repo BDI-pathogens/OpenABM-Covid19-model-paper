@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 """
-Script to create figure of R through time
-
-
-Add smoothing ...
-Add confidence interval ... sd of mean.
+Calculate and plot R through time
 """
 
 from os.path import join
 
-import pandas as pd, numpy as np
+import pandas as pd, numpy as np, sys
 from matplotlib import pyplot as plt
 from collections import Counter
 
@@ -18,27 +14,30 @@ from scipy.stats import gamma
 import plotting, constants
 from COVID19.model import TransmissionTypeEnum
 
-
-# Import the data output from the model
-df_trans = pd.read_csv(join("results", "transmission_Run1.csv"))
-df_ts = pd.read_csv(join("results", "covid_timeseries_Run1.csv"))
-df_params = pd.read_csv(join("OpenABM-Covid19", "tests", "data", "baseline_parameters.csv"))
-
-# Outbreak-specific outputs
-times = df_ts.time.values
-end_time = df_ts.time.max()
-lockdown_time = np.min(np.where(df_ts.lockdown == True))
-intervention_time = np.min(np.where(df_ts.total_infected/1E6 >= 0.005))
-
-infectiontimevar = "time_infected"
-plt.rcParams["savefig.format"] = "png"
-
 if __name__ == "__main__":
     
-    plt.rcParams['figure.figsize'] = [12, 7]
+    transmission_file = sys.argv[1]
+    timeseries_file = sys.argv[2]
+    baseline_parameters_file = sys.argv[3]
+    output_file = sys.argv[4]
+    
+    # Import the data output from the model
+    df_trans = pd.read_csv(transmission_file)
+    df_ts = pd.read_csv(timeseries_file)
+    df_params = pd.read_csv(baseline_parameters_file)
+    
+    # Outbreak-specific outputs
+    times = df_ts.time.values
+    end_time = df_ts.time.max()
+    lockdown_time = np.min(np.where(df_ts.lockdown == True))
+    intervention_time = np.min(np.where(df_ts.total_infected/1E6 >= 0.005))
+
+    infectiontimevar = "time_infected"
+    
+    plt.rcParams['figure.figsize'] = [12, 8]
     
     #############
-    # Actual R
+    # Actual R (R from transmission file)
     # --------
     # At each time point, calculate the number of future infections for each individual
     # that is infected at the time point in question
@@ -86,15 +85,15 @@ if __name__ == "__main__":
         tick.label.set_fontsize(14)
     
     ax.set_xlabel("Simulation time\n(lockdown on day 0; self-isolation on symptoms on day " + \
-        str(intervention_time - lockdown_time) + ")", fontsize = 12)
-    ax.set_ylabel("Reproduction number", fontsize = 12)
+        str(intervention_time - lockdown_time) + ")", fontsize = 16)
+    ax.set_ylabel("Reproduction number", fontsize = 16)
     
     ax.set_ylim([0, 6])
     ax.set_yticks(range(7))
     
-    # #############
-    # # From timeseries data
-    # # --------------------
+    #############
+    # R from timeseries data
+    # --------------------
 
     # Calculate parameters for gamma distribution of infectious period
     a, b = plotting.gamma_params(
@@ -121,11 +120,8 @@ if __name__ == "__main__":
         R.append(I_t / G)
     
     ax.plot(times[1:] - lockdown_time, R,
-        label = "$R_{instantaneous}$",
-        lw = 3, alpha = 0.8,
-        c = "#0072B2")
-
-    plt.legend(frameon = False, fontsize = 14)
-    plt.savefig(join("figures", "figS4_actual_R"), dpi = 300)
+        label = "$R_{instantaneous}$", lw = 3, alpha = 0.8, c = "#0072B2")
+    
+    plt.legend(frameon = False, fontsize = 20)
+    plt.savefig(output_file, dpi = 300)
     plt.close()
-
