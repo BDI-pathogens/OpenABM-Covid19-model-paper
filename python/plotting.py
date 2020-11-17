@@ -39,6 +39,23 @@ EVENT_TYPE_STRING = {
 }
 
 
+def gamma_params(mn, sd):
+    """
+    Return scale and shape parameters from a Gamma distribution from input mean and sd
+    
+    Arguments
+    ---------
+    mn : float
+        Mean of the gamma distribution
+    sd : float
+        Standard deviation of the gamma distribution
+    """
+    scale = (sd**2)/mn
+    shape = mn/scale
+    
+    return(shape, scale)
+
+
 def overlapping_bins(start, stop, window, by):
     """Generate overlapping bins"""
     
@@ -289,77 +306,6 @@ def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None,
     return(fig, ax)
 
 
-def add_heatmap_to_axes(ax, x, y, bin_list, vmin, vmax):
-    """
-    Plot heatmap of 2D histogram.
-    
-    Used for 2D histograms of transmission events across two grouping variables (e.g. age)
-    
-    Arguments
-    ---------
-    ax : object of matplotlib class `Axes`
-        Axis object of where to add a heatmap
-    x : np.array
-        Array of the x values with which to create a histogram
-    y : np.array
-        Array of the y values with which to create a histogram
-    bin_list : list
-        List of bins to use in the histogram
-    
-    Returns
-    -------
-    (ax, im)
-    ax : object of matplotlib class `Axes`
-        updated Axes object
-    im : matplotlib.image.AxesImage
-        AxesImage object returned from matplotlib.pyplot.imshow
-    """
-    
-    array, xbins, ybins = np.histogram2d(x, y, bin_list)
-    
-    im = ax.imshow(np.ma.masked_where(array == 0, array), 
-        origin = "lower", aspect = "equal", vmin = vmin, vmax = vmax)
-    
-    return(ax, im)
-
-
-
-def adjust_ticks(ax, xtick_fontsize = 12, ytick_fontsize = 12, 
-    xticklabels = None, yticklabels = None):
-    """
-    Adjust tick font size and ticklabels in a matplotlib.Axes object
-    
-    Arguments
-    ---------
-    ax : object of matplotlib class `Axes`
-        Axis object of where to adjust tick fonts/labels
-    xtick_fontsize, ytick_fontsize : int
-        Font size of x-ticks and y-ticks
-    xticklabels, yticklabels : list of str
-        List of x and y axis tick labels to change
-    
-    Returns
-    -------
-    ax : object of matplotlib class `Axes`
-        Returns the modified axis object
-    """
-    
-    for tick in ax.xaxis.get_major_ticks():
-        tick.label.set_fontsize(xtick_fontsize)
-    
-    for tick in ax.yaxis.get_major_ticks():
-        tick.label.set_fontsize(ytick_fontsize)
-    
-    if xticklabels is not None:
-        ax.set_xticks(np.arange(len(xticklabels)))
-        ax.set_xticklabels(xticklabels, rotation = 60)
-    
-    if yticklabels is not None:
-        ax.set_yticks(np.arange(len(yticklabels)))
-        ax.set_yticklabels(yticklabels)
-    
-    return(ax)
-
 
 def ifr_hist_by_age(df, 
         numerator_var, denominator_var,
@@ -587,23 +533,6 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
     return(fig, ax)
 
 
-def gamma_params(mn, sd):
-    """
-    Return scale and shape parameters from a Gamma distribution from input mean and sd
-    
-    Arguments
-    ---------
-    mn : float
-        Mean of the gamma distribution
-    sd : float
-        Standard deviation of the gamma distribution
-    """
-    scale = (sd**2)/mn
-    shape = mn/scale
-    
-    return(shape, scale)
-
-
 def PlotHistByAge(df, 
         groupvars, 
         age_group_var = "age_group",
@@ -663,6 +592,83 @@ def PlotHistByAge(df,
     return(fig, ax)
 
 
+######################
+# Plotting utilities
+# -------------------
+
+
 def remove_spines(ax, locations = ["top", "right", "bottom", "left"]):
     for loc in locations:
         ax.spines[loc].set_visible(False)
+
+
+
+def add_heatmap_to_axes(ax, x, y, bin_list, vmin, vmax):
+    """
+    Plot heatmap of 2D histogram.
+    
+    Used for 2D histograms of transmission events across two grouping variables (e.g. age)
+    
+    Arguments
+    ---------
+    ax : object of matplotlib class `Axes`
+        Axis object of where to add a heatmap
+    x : np.array
+        Array of the x values with which to create a histogram
+    y : np.array
+        Array of the y values with which to create a histogram
+    bin_list : list
+        List of bins to use in the histogram
+    
+    Returns
+    -------
+    (ax, im)
+    ax : object of matplotlib class `Axes`
+        updated Axes object
+    im : matplotlib.image.AxesImage
+        AxesImage object returned from matplotlib.pyplot.imshow
+    """
+    
+    array, xbins, ybins = np.histogram2d(x, y, bin_list)
+    
+    im = ax.imshow(np.ma.masked_where(array == 0, array), 
+        origin = "lower", aspect = "equal", vmin = vmin, vmax = vmax)
+    
+    return(ax, im)
+
+
+def adjust_ticks(ax, xtick_fontsize = 12, ytick_fontsize = 12, 
+    xticklabels = None, yticklabels = None):
+    """
+    Adjust tick font size and ticklabels in a matplotlib.Axes object
+    
+    Arguments
+    ---------
+    ax : object of matplotlib class `Axes`
+        Axis object of where to adjust tick fonts/labels
+    xtick_fontsize, ytick_fontsize : int
+        Font size of x-ticks and y-ticks
+    xticklabels, yticklabels : list of str
+        List of x and y axis tick labels to change
+    
+    Returns
+    -------
+    ax : object of matplotlib class `Axes`
+        Returns the modified axis object
+    """
+    
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(xtick_fontsize)
+    
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ytick_fontsize)
+    
+    if xticklabels is not None:
+        ax.set_xticks(np.arange(len(xticklabels)))
+        ax.set_xticklabels(xticklabels, rotation = 60)
+    
+    if yticklabels is not None:
+        ax.set_yticks(np.arange(len(yticklabels)))
+        ax.set_yticklabels(yticklabels)
+    
+    return(ax)
