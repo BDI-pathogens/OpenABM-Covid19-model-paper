@@ -5,6 +5,8 @@
 # Main figures
 # ---------------------
 
+# figure 1 is a schematic of networks
+
 figure2:
 	python python/figure_2.py
 
@@ -13,15 +15,22 @@ figure3:
 		"results/transmission_Run1.csv" \
 		"figures/fig4_transmission_matrix_by_age_by_infectiousness.png"
 
-
 # figure 4 is a schematic of the model
-
 
 figure5:
 	python python/ifr_hist_by_age.py \
 		"results/transmission_Run1.csv" \
 		"figures/fig5_ifr_by_age.png"
 
+
+#######################
+# Main tables
+# ---------------------
+
+table1:
+	python python/table_ifr_by_age.py \
+		"results/transmission_Run1.csv" \
+		"tables/tab1_ifr_by_age.csv"
 
 #######################
 # Supplementary figures
