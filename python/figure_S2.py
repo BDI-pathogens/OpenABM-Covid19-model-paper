@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 """
-Script to create figure S2
-
-Waiting-time distributions
+Figure of waiting-time distributions
 """
 
-from os.path import join
-
-import pandas as pd, numpy as np
+import pandas as pd, numpy as np, sys
 from matplotlib import pyplot as plt
 
 import plotting
-from COVID19.model import AgeGroupEnum, EVENT_TYPES, TransmissionTypeEnum, OccupationNetworkEnum
 
 if __name__ == "__main__":
-
+    
+    input_parameter_file = sys.argv[1]
+    output_file = sys.argv[2]
+    
     plt.rcParams['figure.figsize'] = [14, 12]
     
-    df_parameters_used = pd.read_csv(join("OpenABM-Covid19", "tests", 
-        "data", "baseline_parameters.csv"))
+    df_parameters_used = pd.read_csv(input_parameter_file)
     
     fig, ax = plotting.plot_parameter_assumptions(df_parameters_used)
 
-    plt.savefig(join("figures", "figS2_waiting_time_distributions"))
+    plt.savefig(output_file)
     plt.close()
