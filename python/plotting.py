@@ -322,7 +322,6 @@ def ifr_hist_by_age(df,
     """
     
     bins = np.arange(0, NBINS + 1) - 0.5
-    n_age = len(np.unique(df[age_group_var]))
     
     fig, ax = plt.subplots()
     
