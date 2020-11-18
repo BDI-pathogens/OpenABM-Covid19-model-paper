@@ -17,7 +17,8 @@ figure2:
 figure3:
 	python python/transmission_heatmap_by_age_by_infectiousness.py \
 		"results/transmission_Run1.csv" \
-		"figures/fig3_transmission_matrix_by_age_by_infectiousness.png"
+		"figures/fig3_transmission_matrix_by_age_by_infectiousness" \
+		"pdf"
 
 # figure 4 is a schematic of the model
 

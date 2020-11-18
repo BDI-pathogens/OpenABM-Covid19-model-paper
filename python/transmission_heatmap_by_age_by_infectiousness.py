@@ -36,7 +36,9 @@ if __name__ == "__main__":
     
     transmission_file = sys.argv[1]
     output_figure = sys.argv[2]
+    file_format = sys.argv[3]
     
+    plt.rcParams["savefig.format"] = file_format
     plt.rcParams['figure.figsize'] = [12, 10]
     
     df_trans = pd.read_csv(transmission_file)
