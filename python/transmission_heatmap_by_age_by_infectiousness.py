@@ -16,21 +16,21 @@ age_group_labels = [enum.name[1:].replace("_","-") for enum in AgeGroupEnum]
 age_group_labels[-1] = "80+"
 n_age = len(age_group_labels)
 
-infectious_compartments = [ \
-    "PRESYMPTOMATIC", 
-    "PRESYMPTOMATIC_MILD", \
+# Ordering of panels
+infectious_names = [ \
     "ASYMPTOMATIC", \
-    "SYMPTOMATIC", \
-    "SYMPTOMATIC_MILD"]
+    "PRESYMPTOMATIC_MILD", \
+    "PRESYMPTOMATIC", \
+    "SYMPTOMATIC_MILD", \
+    "SYMPTOMATIC"]
 
-infectious_types = [e.value for e in EVENT_TYPES if e.name in infectious_compartments]
-infectious_names = [e.name for e in EVENT_TYPES if e.name in infectious_compartments]
-infectious_labels = [\
-    plotting.EVENT_TYPE_STRING[e.value] \
-    for e in EVENT_TYPES \
-    if e.name in infectious_compartments\
-]
-
+# Pull the names and values of the above infectious types
+infectious_types = []; infectious_labels = []
+for i in infectious_names:
+    for e in EVENT_TYPES:
+        if i == e.name:
+            infectious_types.append(e.value)
+            infectious_labels.append(plotting.EVENT_TYPE_STRING[e.value])
 
 if __name__ == "__main__":
     
