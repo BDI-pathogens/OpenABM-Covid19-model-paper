@@ -205,7 +205,7 @@ def transmission_heatmap_by_age_by_panels(df,
     """
     
     if not isinstance(bins, list):
-        bin_list = np.arange(bins)
+        bin_list = np.arange(bins + 1) - 0.5    
     
     if not panels: 
         panels = np.unique(df[panelvar])
