@@ -251,7 +251,7 @@ def transmission_heatmap_by_age_by_panels(df,
         axi = adjust_ticks(axi, xtick_fontsize = 14, ytick_fontsize = 14, 
             xticklabels = xticklabels, yticklabels = yticklabels)
         
-        if i > 0:
+        if not ((i == 0) | (i == 3)):
             axi.set_yticks([])
         
         axi.set_xlabel(xlabel, size = 16)
