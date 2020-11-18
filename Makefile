@@ -11,12 +11,13 @@ figure2:
 	python python/figure_2.py \
 		"results/interactions_Run1.csv" \
 		"results/individual_file_Run1.csv" \
-		"figures"
+		"figures" \
+		"pdf"
 
 figure3:
 	python python/transmission_heatmap_by_age_by_infectiousness.py \
 		"results/transmission_Run1.csv" \
-		"figures/fig4_transmission_matrix_by_age_by_infectiousness.png"
+		"figures/fig3_transmission_matrix_by_age_by_infectiousness.png"
 
 # figure 4 is a schematic of the model
 
