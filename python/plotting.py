@@ -291,7 +291,7 @@ def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None,
     
     """
     if not isinstance(bins, list):
-        bin_list = np.arange(bins)
+        bin_list = np.arange(bins + 1) - 0.5
     
     fig, ax = plt.subplots()
     
