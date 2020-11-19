@@ -14,7 +14,6 @@ from COVID19.model import AgeGroupEnum, EVENT_TYPES, TransmissionTypeEnum, Occup
 
 age_group_labels = [enum.name[1:].replace("_","-") for enum in AgeGroupEnum]
 age_group_labels[-1] = "80+"
-n_age = len(age_group_labels)
 
 # Ordering of panels
 infectious_names = [ \
@@ -44,7 +43,7 @@ if __name__ == "__main__":
     df_trans = pd.read_csv(transmission_file)
     
     fig, ax = plotting.transmission_heatmap_by_age_by_panels(
-        df_trans, "age_group_recipient", "age_group_source", bins = n_age,
+        df_trans, "age_group_recipient", "age_group_source", bins = len(AgeGroupEnum),
         panels = infectious_types,
         panelvar = "status_source", panel_labels = infectious_labels,
         xlabel = "Age of source", ylabel = "Age of recipient",
