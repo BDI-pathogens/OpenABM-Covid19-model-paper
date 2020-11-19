@@ -10,7 +10,7 @@ interaction_labels = [c.name[1:].title() for c in TransmissionTypeEnum]
 interaction_types = [c.value for c in TransmissionTypeEnum ]
 
 # Define age groups and labels
-n_age = len(AgeGroupEnum) + 1
+n_age = len(AgeGroupEnum)
 age_group_labels = [enum.name[1:].replace("_","-") for enum in AgeGroupEnum]
 age_group_labels[-1] = "80+"
 n_age_groups = len(age_group_labels)
