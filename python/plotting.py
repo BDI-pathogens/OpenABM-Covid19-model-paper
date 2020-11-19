@@ -205,7 +205,7 @@ def transmission_heatmap_by_age_by_panels(df,
     """
     
     if not isinstance(bins, list):
-        bin_list = np.arange(bins + 1) - 0.5    
+        bin_list = np.arange(bins + 1) - 0.5
     
     if not panels: 
         panels = np.unique(df[panelvar])
@@ -256,9 +256,6 @@ def transmission_heatmap_by_age_by_panels(df,
         
         axi.set_xlabel(xlabel, size = 16)
         axi.set_title(panel_labels[i], size = title_fontsize)
-        
-        if not spines:
-            remove_spines(axi)
     
     # Start ticks from 1 (0 is shown in white)
     cbar_ticks = np.arange(200, 1600, 200)
@@ -279,7 +276,7 @@ def transmission_heatmap_by_age_by_panels(df,
 def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None, 
     group_labels = None, xlabel = "", ylabel = "", title = "", legend_title = "", 
     legend_loc = "right", xticklabels = None, yticklabels = None, normalise = False, 
-    vmin = 0, vmax = None):
+    vmin = 0, vmax = None, cbar_ticks = None):
     """
     Plot 2D histogram (as a heatmap) of transmission events by two grouping variables
     (for instance, age group)
@@ -298,19 +295,18 @@ def plot_transmission_heatmap_by_age(df, group1var, group2var, bins = None,
     ax, im = add_heatmap_to_axes(ax, df[group1var].values, df[group2var].values, bin_list, 
         vmin = vmin, vmax = vmax)
     
-    ax = adjust_ticks(ax, xtick_fontsize = 16, ytick_fontsize = 16, 
+    ax = adjust_ticks(ax, xtick_fontsize = 16, ytick_fontsize = 16,
         xticklabels = xticklabels, yticklabels = yticklabels)
     
     ax.set_xlabel(xlabel, size = 20)
     ax.set_ylabel(ylabel, size = 20)
     ax.set_title(title)
     
-    cbar = fig.colorbar(im, fraction = 0.046, pad = 0.04)
+    cbar = fig.colorbar(im, fraction = 0.046, pad = 0.04, ticks = cbar_ticks)
     cbar.set_label(legend_title, size = 18)
     cbar.ax.tick_params(labelsize = 14)
     
     return(fig, ax)
-
 
 
 def ifr_hist_by_age(df, 
