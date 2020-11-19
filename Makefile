@@ -25,7 +25,8 @@ figure3:
 figure5:
 	python python/ifr_hist_by_age.py \
 		"results/transmission_Run1.csv" \
-		"figures/fig5_ifr_by_age.png"
+		"figures/fig5_ifr_by_age" \
+		"pdf"
 
 
 #######################
