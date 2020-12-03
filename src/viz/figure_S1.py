@@ -18,7 +18,8 @@ if __name__ == "__main__":
     
     transmission_file = sys.argv[1]
     individual_file = sys.argv[2]
-    file_format = sys.argv[3]
+    output_dir = sys.argv[3]
+    file_format = sys.argv[4]
     
     plt.rcParams["savefig.format"] = file_format
     
@@ -96,7 +97,7 @@ if __name__ == "__main__":
     
     plt.subplots_adjust(hspace = 0.5)
     
-    plt.savefig(join("figures", "figS1_I_H_D"))
+    plt.savefig(join(output_dir, "figS1_I_H_D"))
     plt.close()
 
 
@@ -112,5 +113,5 @@ if __name__ == "__main__":
         NBINS = len(AgeGroupEnum), density = True, xticklabels = age_group_labels, 
         xlabel = "Age group", ylim = 0.5, age_group_var = "age_group_recipient")
     
-    plt.savefig(join("figures", "figS1_H_ICU_D"))
+    plt.savefig(join(output_dir, "figS1_H_ICU_D"))
     plt.close()
