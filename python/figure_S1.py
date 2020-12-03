@@ -1,27 +1,30 @@
-
 #!/usr/bin/env python3
 """
-Script to create figure S2
-
-Waiting-time distributions
+Age-stratified figures of different states
 """
 
 from os.path import join
 
-import pandas as pd, numpy as np
+import pandas as pd, numpy as np, sys
 from matplotlib import pyplot as plt
 
 import plotting
 from COVID19.model import AgeGroupEnum, EVENT_TYPES, TransmissionTypeEnum, OccupationNetworkEnum
 
-df_trans = pd.read_csv(join("results", "transmission_Run1.csv"))
-df_indiv = pd.read_csv(join("results", "individual_file_Run1.csv"))
-
 age_group_labels = [enum.name[1:].replace("_","-") for enum in AgeGroupEnum]
 age_group_labels[-1] = "80+"
-n_age = len(AgeGroupEnum)
 
 if __name__ == "__main__":
+    
+    transmission_file = sys.argv[1]
+    individual_file = sys.argv[2]
+    file_format = sys.argv[3]
+    
+    plt.rcParams["savefig.format"] = file_format
+    
+    df_trans = pd.read_csv(transmission_file)
+    df_indiv = pd.read_csv(individual_file)
+    
     ################################################################
     # Proportion of infected/recovered/death within each age group #
     ################################################################
@@ -52,7 +55,7 @@ if __name__ == "__main__":
     df["prop_hospitalised"] = df.total_hospitalised / df.total_popn
     df["prop_death"] = df.total_death / df.total_popn
     
-    bins = np.arange(0, n_age + 1) - 0.1
+    bins = np.arange(0, len(AgeGroupEnum) + 1) - 0.1
     plotvars = ["prop_infected", "prop_hospitalised", "prop_death"]
     xticklabels = age_group_labels
     xlabel = "Age group"
@@ -67,9 +70,9 @@ if __name__ == "__main__":
             alpha = 1.0, color = "#0072B2", edgecolor = "#0d1a26", 
             linewidth = 0.5, zorder = 3)
 
-        for bi in range(len(bins) - 1):
-            ax[axi].text(bins[bi] + 0.4, height[bi], str(np.round(height[bi], 3)),
-                ha = "center", va = "bottom", color = "grey", size = 12)
+        # for bi in range(len(bins) - 1):
+        #     ax[axi].text(bins[bi] + 0.4, height[bi], str(np.round(height[bi], 3)),
+        #         ha = "center", va = "bottom", color = "grey", size = 12)
     
         ax[axi].set_xlim([0, np.max(bins)])
         ax[axi].spines["top"].set_visible(False)
@@ -105,9 +108,9 @@ if __name__ == "__main__":
     groupvars = ["time_hospitalised", "time_critical", "time_death"]
     labels = ["Hospitalisations", "ICU", "Deaths"]
 
-    fig, ax = plotting.PlotHistByAge(df_trans, groupvars = groupvars, group_labels = labels,
-        NBINS = n_age, density = True, xticklabels = age_group_labels, xlabel = "Age group",
-        ylim = 0.5, age_group_var = "age_group_recipient")
+    fig, ax = plotting.plot_hist_by_age(df_trans, groupvars = groupvars, group_labels = labels,
+        NBINS = len(AgeGroupEnum), density = True, xticklabels = age_group_labels, 
+        xlabel = "Age group", ylim = 0.5, age_group_var = "age_group_recipient")
     
     plt.savefig(join("figures", "figS1_H_ICU_D"))
     plt.close()
