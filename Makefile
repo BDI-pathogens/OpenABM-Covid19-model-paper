@@ -42,6 +42,12 @@ table1:
 # Supplementary figures
 # ---------------------
 
+figureS1:
+	python python/figure_S1.py \
+	"results/transmission_Run1.csv" \
+	"results/individual_file_Run1.csv" \
+	"pdf"
+
 figureS2:
 	python python/waiting_time_distributions.py \
 		"OpenABM-Covid19/tests/data/baseline_parameters.csv" \
@@ -62,6 +68,16 @@ figureS4:
 		"results/covid_timeseries_Run1.csv" \
 		"OpenABM-Covid19/tests/data/baseline_parameters.csv" \
 		"figures/figS4_actual_R.png"
+
+#######################
+# Supplementary tables
+# ---------------------
+
+tableS1:
+	python python/table_ifr_by_age.py \
+		"results/transmission_Run1.csv" \
+		"tables/tab1_ifr_by_age.csv"
+
 
 
 #######################
