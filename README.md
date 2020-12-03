@@ -7,12 +7,42 @@ Analysis repo to generate tables, figures for manuscript on the OpenABM-Covid19 
 To generate the data, one needs to install [OpenABM-Covid19](https://github.com/BDI-pathogens/OpenABM-Covid19), the requirements for which are listed on the README.md of the OpenABM-Covid19 repo.  For generation of the figures and tables in this repo, one needs Python>3.6 (other package requirements should be satisfied if OpenABM is already running) and R >3.4.  
 
 
+The scripts herein assume OpenABM-Covid19 is cloned as a subdirectory of this repo (or it could be pulled using `git submodule`, for instance).  
+```
+model_dir="OpenABM-Covid19"
+release="0.3"
+
+cd OpenABM-Covid19-model-paper
+git clone https://github.com/BDI-pathogens/OpenABM-Covid19.git "$model_dir"
+(cd "$model_dir"; git checkout "$release")
+```
+
+We recommend running these analyses with a Python virtual environment.  A virtual environment can be set up, activated, and prerequisites installed in the following manner: 
+
+```
+python3 -m venv venv
+source venv/bin/activate
+pip install -r "$model_dir/tests/requirements.txt"
+(cd $model_dir/src; make clean; make)
+```
+
+The virtual environment can be deactivated using `deactivate`.  
+
 ## Usage
 
-* `step0_set_up.sh`: clone the OpenABM-Covid19 model, creates a virtual environment into which the model, and prerequisites, are installed
-* `step1_run_model.sh`: runs the OpenABM-Covid19 model in a population of 1 million with demographics and control interventions similar to the UK.  Model output is stored in the `results` folder.  
-* `step2_create_figures.sh`: runs python scripts to generate figures for the paper from model output
+* `make openabm_paper`: Generate all figures and tables for the paper.  
 
+**Additional commands**
+
+* `make data`: Generate simulation data for a population of 1M with UK-like demographics and controls (self-isolation on symptoms, self-isolate on positive test result, lockdown when prevalence reaches 2% in the population).  
+
+All figures and tables can be generated in the following manner (after the data have been generated): 
+
+* `make figure1`: Generate figure 1
+* `make figureS1`: Generate figure S1
+* `make table1`: Generate table 1.  
+
+## Output figures
 
 ### Figure 1
 
