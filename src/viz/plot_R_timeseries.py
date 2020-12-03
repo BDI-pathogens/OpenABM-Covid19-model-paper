@@ -20,6 +20,7 @@ if __name__ == "__main__":
     timeseries_file = sys.argv[2]
     baseline_parameters_file = sys.argv[3]
     output_file = sys.argv[4]
+    file_format = sys.argv[5]
     
     # Import the data output from the model
     df_trans = pd.read_csv(transmission_file)
@@ -34,6 +35,7 @@ if __name__ == "__main__":
 
     infectiontimevar = "time_infected"
     
+    plt.rcParams["savefig.format"] = file_format
     plt.rcParams['figure.figsize'] = [12, 8]
     
     #############
