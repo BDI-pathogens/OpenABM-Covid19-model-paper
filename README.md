@@ -31,6 +31,8 @@ The virtual environment can be deactivated using `deactivate`.
 ## Usage
 
 * `make all`: Will generate the simulated data, and generate all figures and tables used in the paper.  
+* `make all_output`: Generate all figures and tables used in the paper (without generating the simulated data).  
+
 
 **Additional commands**
 
