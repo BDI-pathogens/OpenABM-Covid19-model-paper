@@ -8,7 +8,6 @@ from os.path import join
 import pandas as pd, numpy as np, sys
 from matplotlib import pyplot as plt
 
-import plotting
 from COVID19.model import AgeGroupEnum, EVENT_TYPES, TransmissionTypeEnum, OccupationNetworkEnum
 
 n_age = len(AgeGroupEnum)
