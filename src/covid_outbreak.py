@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """
-
+Python script to run OpenABM-Covid19 with a basic intervention scenario of self-isolation on 
+symptoms or positive test, and lockdown.  Triggers for self-isolation on symptoms and lockdown
+are based upon prevalence.  
 
 Created: August 2020
 Authors: p-robot, aneln
 """
 
-import os, sys, argparse
-import numpy as np, pandas as pd
+import argparse, numpy as np, pandas as pd
 from os.path import join
 
 from COVID19.model import Model, Parameters, ModelParameterException
@@ -46,43 +47,19 @@ if __name__ == "__main__":
         help = "Prevalence (%) of SARS-CoV-2 in popn at which point lockdown is triggered", 
         default = 2)
 
-    parser.add_argument("--lockdown_multiplier", type = float,
-        help = "Multiplier on number of daily contacts during lockdown", required = True)
-
     parser.add_argument("--lockdown_duration", type = int,
         help = "Duration of lockdown (days)", default = 70)
+
+    parser.add_argument("--intervention_prevalence_trigger", type = float,
+        help = "Prevalence (%) of SARS-CoV-2 in popn at which point self-isolation on symptoms is triggered", 
+        default = 0.5)
 
     parser.add_argument("--intervention_self_quarantine_fraction", type = float,
         help = "Fraction of symptomatics self-quarantining when interventions start", 
         default = 0.65)
 
-    parser.add_argument("--app_uptake_multiplier", type = float, default = 0.6, 
-        help = "Proportion of phone users that use the contact tracing app")
-
     parser.add_argument("--file_prefix", type = str,
         help = "Prefix of timeseries files", default = "covid19_timeseries")
-
-    #
-    # params.set_param( "app_users_fraction_0_9",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_0_9") )
-    # params.set_param( "app_users_fraction_10_19",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_10_19") )
-    # params.set_param( "app_users_fraction_20_29",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_20_29") )
-    # params.set_param( "app_users_fraction_30_39",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_30_39") )
-    # params.set_param( "app_users_fraction_40_49",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_40_49") )
-    # params.set_param( "app_users_fraction_50_59",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_50_59") )
-    # params.set_param( "app_users_fraction_60_69",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_60_69") )
-    # params.set_param( "app_users_fraction_70_79",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_70_79") )
-    # params.set_param( "app_users_fraction_80",
-    #     app_uptake_multiplier * params.get_param( "app_users_fraction_80") )
-    #
-    # params.set_param( "self_quarantine_fraction", 0 )
 
     # ---------------------------------------------------------------------------
     # All remaining parameters are interpreted as parameters native to the model
@@ -117,30 +94,23 @@ if __name__ == "__main__":
     # Write the interactions file on the first day of the simulation
     sim.env.model.write_interactions_file()
     
-    # check whether it is time for self-isolation: 0.5% of population infected
-    while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) < 0.005 ):
+    # Turn on self-isolation on symptoms when a specific prevalence is met
+    while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) < args.intervention_prevalence_trigger/100. ):
         sim.steps(1)
         et += 1
     
-    # during self-isolation, 65% people self-isolate with their HH on symptoms until 2% 
-    # of population infected
-    sim.env.model.update_running_params( "self_quarantine_fraction", 0.65 )
+    # During self-isolation, assume a specific proportion of population self-isolate 
+    # (with their HH) on symptoms, and also do so on return of a positive test
+    sim.env.model.update_running_params( "self_quarantine_fraction", args.intervention_self_quarantine_fraction )
     sim.env.model.update_running_params( "quarantine_household_on_symptoms", 1 )
     sim.env.model.update_running_params( "quarantine_household_on_positive", 1 )
     
-    # lockdown on when 2% of population infected
-    while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) < 0.02 ):
+    # Turn lockdown on when a specific prevalence of population infected
+    while ( ( sim.results["total_infected"][ -1]/params.get_param("n_total") ) < args.lockdown_prevalence_trigger/100. ):
         sim.steps(1)
         et += 1
     
     sim.env.model.update_running_params("lockdown_on", 1)
-    sim.env.model.update_running_params("lockdown_house_interaction_multiplier", 1.5)
-    sim.env.model.update_running_params("lockdown_random_network_multiplier", 0.29)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_primary_network", 0.29)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_secondary_network", 0.29)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_working_network", 0.29)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_retired_network", 0.29)
-    sim.env.model.update_running_params("lockdown_occupation_multiplier_elderly_network", 0.29)
     
     el = 0 # elapsed lockdown
     while el < (args.lockdown_duration - 7):
@@ -152,10 +122,14 @@ if __name__ == "__main__":
         sim.steps(1)
         et += 1
         el += 1
+    
     print("Elapsed time:", el)
+    
     # Write output files
     sim.env.model.write_transmissions()
     sim.env.model.write_individual_file()
     
+    # Write timeseries file
     timeseries = pd.DataFrame( sim.results )
     timeseries.to_csv(join(args.output_dir, "covid_timeseries_Run1.csv"), index = False)
+
