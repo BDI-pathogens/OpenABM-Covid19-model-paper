@@ -15,6 +15,7 @@ args <- commandArgs(trailingOnly = TRUE)
 app_uptake <- as.numeric(args[1])
 input_parameter_file <- args[2]
 output_file <- args[3]
+file_format <- args[4]
 
 # Read data
 df <- read.csv(file.path(input_parameter_file), stringsAsFactors = F)
@@ -48,4 +49,5 @@ p <- ggplot(df_long, aes(x = age, y = value/1E6, fill = variable)) +
         labels = c("Total population", "with smartphones", 
             paste0("with app (", app_uptake*100, "% uptake)")))
 
-ggsave(filename = file.path(output_file), plot = p, width = 12, height = 6)
+ggsave(filename = file.path(paste0(output_file, ".", file_format)), plot = p, 
+    width = 12, height = 6)
