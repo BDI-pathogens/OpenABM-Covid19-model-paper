@@ -30,12 +30,12 @@ Summary of transmission events from a single simulated uncontrolled epidemic str
 ![./output/figures/fig4_transmission_matrix_by_infectiousness.png](./output/figures/fig4_transmission_matrix_by_infectiousness.png)
 
 
-### Figure 6
+### Figure 5
 
 Age-stratified infection fatality ratio as output from a single simulation in a population of 1 million with UK-like demography and control interventions.  
 
 
-![./output/figures/fig6_ifr.png](./figures/fig6_ifr.png)
+![./output/figures/fig5_ifr_by_age.png](./output/figures/fig5_ifr_by_age.png)
 
 
 ### Figure S2
