@@ -30,17 +30,18 @@ The virtual environment can be deactivated using `deactivate`.
 
 ## Usage
 
-* `make openabm_paper`: Generate all figures and tables for the paper.  
+* `make all`: Will generate the simulated data, and generate all figures and tables used in the paper.  
 
 **Additional commands**
 
 * `make data`: Generate simulation data for a population of 1M with UK-like demographics and controls (self-isolation on symptoms, self-isolate on positive test result, lockdown when prevalence reaches 2% in the population).  
 
-All figures and tables can be generated in the following manner (after the data have been generated): 
+All figures and tables can be generated individually in the following manner (after the data have been generated): 
 
-* `make figure1`: Generate figure 1
-* `make figureS1`: Generate figure S1
-* `make table1`: Generate table 1.  
+* `make figure1`: Generate figure 1, etc
+* `make figureS1`: Generate figure S1, etc
+* `make table1`: Generate table 1, etc
+
 
 ## Output figures
 
@@ -71,9 +72,35 @@ Age-stratified infection fatality ratio as output from a single simulation in a 
 ![./output/figures/fig5_ifr_by_age.png](./output/figures/fig5_ifr_by_age.png)
 
 
+### Figure S1
+
+![./output/figures/figS1_H_ICU_D.png](./output/figures/figS1_H_ICU_D.png)
+
+
 ### Figure S2
 
+Waiting time distributions for transitions between infection and disease states.
 
 ![./output/figures/figS2_waiting_time_distributions.png](./output/figures/figS2_waiting_time_distributions.png)
 
-Waiting time distributions for transitions between infection and disease states.
+
+
+### Figure S2
+
+Waiting time distributions used within OpenABM-Covid19
+
+![./output/figures/figS2_waiting_time_distributions.png](./output/figures/figS2_waiting_time_distributions.png)
+
+
+### Figure S3
+
+App uptake
+
+![./output/figures/figS3_histogram_app_uptake.png](./output/figures/figS3_histogram_app_uptake.png)
+
+### Figure S4
+
+Reproduction number calculated from the transmission file and timeseries file
+
+![./output/figures/figS4_actual_R.png](./output/figures/figS4_actual_R.png)
+
