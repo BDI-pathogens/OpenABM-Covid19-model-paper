@@ -534,7 +534,7 @@ def plot_parameter_assumptions(df_parameters, xlimits = [0, 30], lw = 3):
     return(fig, ax)
 
 
-def PlotHistByAge(df, 
+def plot_hist_by_age(df, 
         groupvars, 
         age_group_var = "age_group",
         NBINS = None,
@@ -548,8 +548,7 @@ def PlotHistByAge(df,
     
     """
     
-    a = 1.0
-    bins = np.arange(0, NBINS + 1) - 0.1
+    bin_list = np.arange(0, NBINS + 1) - 0.5
     
     # Define number of groups
     n_groups = len(groupvars)
@@ -560,33 +559,30 @@ def PlotHistByAge(df,
     fig, ax = plt.subplots(nrows = n_groups)
     
     for axi, var in enumerate(groupvars):
-        height, bins, objs = ax[axi].hist(df[df[var] > 0][age_group_var], bins, width = 0.8, 
-            alpha = a, color = "#0072B2", edgecolor = "#0d1a26", linewidth = 0.5, 
-            zorder = 3, density = density)
-        
-        for bi in range(len(bins) - 1):
-            ax[axi].text(bins[bi] + 0.425, height[bi], str(np.round(height[bi], 2)), 
-                ha = "center", va = "bottom", color = "grey", size = 12)
+        height, bins, objs = ax[axi].hist(df[df[var] > 0][age_group_var], bin_list, 
+            width = 0.8, color = "#0072B2", edgecolor = "#0d1a26", 
+            linewidth = 0.5, zorder = 3, density = density)
         
         ax[axi].set_xlim([0, np.max(bins)])
-        remove_spines(ax[axi], ["top", "right"])
-        
         ax[axi].set_ylim([0, ylim])
-        ax[axi].text(0.02, 0.8, group_labels[axi], size = 18, 
-            ha = 'left', va = 'center', transform = ax[axi].transAxes, color = "black")
+        
+        remove_spines(ax[axi], ["top", "right"])
+        ax[axi].text(0.02, 0.8, group_labels[axi], size = 18, ha = 'left', va = 'center', 
+            transform = ax[axi].transAxes, color = "black")
         
         if axi == (n_groups - 1):
             if xticklabels is not None:
-                ax[axi].set_xticks(bins + 0.425)
+                ax[axi].set_xticks(bins + 0.45)
                 ax[axi].set_xticklabels(xticklabels, size = 12)
             else:
-                ax[axi].set_xticks(bins + 0.425)
+                ax[axi].set_xticks(bins + 0.45)
                 ax[axi].set_xticklabels(bins, size = 12)
         else:
-            ax[axi].set_xticks(bins + 0.425)
+            ax[axi].set_xticks(bins + 0.45)
             ax[axi].set_xticks([])
+            ax[axi].set_yticklabels(bins, size = 12)
     
-    ax[n_groups-1].set_xlabel(xlabel, size = 18)
+    ax[n_groups - 1].set_xlabel(xlabel, size = 18)
     
     plt.subplots_adjust(hspace = 0.5)
     
