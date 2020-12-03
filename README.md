@@ -18,9 +18,9 @@ To generate the data, one needs to install [OpenABM-Covid19](https://github.com/
 
 ### Figure 3
 
-Histogram of generation time of simulated transmission events stratified by infectious state of the source.  Generation time is the time from infection to transmission.  Data is from a single simulation in a population of 1 million individuals with UK-like demographics and COVID19 control interventions.  
+Heatmap of transmission events between different age groups for different infectiousness states of the source of infection.  Data is from a single simulation in a population of 1 million individuals with UK-like demographics and COVID19 control interventions.  
 
-![./output/figures/figure_3.png](./output/figures/figure_3.png)
+![output/figures/fig3_transmission_matrix_by_age_by_infectiousness.png](output/figures/fig3_transmission_matrix_by_age_by_infectiousness.png)
 
 
 ### Figure 4
