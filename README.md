@@ -14,7 +14,13 @@ To generate the data, one needs to install [OpenABM-Covid19](https://github.com/
 * `step2_create_figures.sh`: runs python scripts to generate figures for the paper from model output
 
 
+### Figure 1
 
+Figure 1 is a schematic of the networks used in the model.  
+
+### Figure 2
+
+Figure 2 is a composite figure, the subpanels are produced in this repository
 
 ### Figure 3
 
@@ -22,12 +28,9 @@ Heatmap of transmission events between different age groups for different infect
 
 ![output/figures/fig3_transmission_matrix_by_age_by_infectiousness.png](output/figures/fig3_transmission_matrix_by_age_by_infectiousness.png)
 
-
 ### Figure 4
 
-Summary of transmission events from a single simulated uncontrolled epidemic stratified by age of both source and recipient and by infectious status of the source of the infection.
-
-![./output/figures/fig4_transmission_matrix_by_infectiousness.png](./output/figures/fig4_transmission_matrix_by_infectiousness.png)
+Figure 4 is a schematic representation of the different infectiousness and disease compartments in the model.  
 
 
 ### Figure 5
