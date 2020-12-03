@@ -1,4 +1,10 @@
-# Figures for manuscript on the OpenABM-Covid19 model
+# `OpenABM-Covid19-model-paper`
+
+Analysis repo to generate tables, figures for manuscript on the OpenABM-Covid19 model [(Hinch, Probert et al., 2020)](https://www.medrxiv.org/content/10.1101/2020.09.16.20195925v1).  
+
+## Software requirements
+
+To generate the data, one needs to install [OpenABM-Covid19](https://github.com/BDI-pathogens/OpenABM-Covid19), the requirements for which are listed on the README.md of the OpenABM-Covid19 repo.  For generation of the figures and tables in this repo, one needs Python>3.6 (other package requirements should be satisfied if OpenABM is already running) and R >3.4.  
 
 
 ## Usage
@@ -14,14 +20,14 @@
 
 Histogram of generation time of simulated transmission events stratified by infectious state of the source.  Generation time is the time from infection to transmission.  Data is from a single simulation in a population of 1 million individuals with UK-like demographics and COVID19 control interventions.  
 
-![./figures/figure_3.png](./figures/figure_3.png)
+![./output/figures/figure_3.png](./output/figures/figure_3.png)
 
 
 ### Figure 4
 
 Summary of transmission events from a single simulated uncontrolled epidemic stratified by age of both source and recipient and by infectious status of the source of the infection.
 
-![./figures/fig4_transmission_matrix_by_infectiousness.png](./figures/fig4_transmission_matrix_by_infectiousness.png)
+![./output/figures/fig4_transmission_matrix_by_infectiousness.png](./output/figures/fig4_transmission_matrix_by_infectiousness.png)
 
 
 ### Figure 6
@@ -29,12 +35,12 @@ Summary of transmission events from a single simulated uncontrolled epidemic str
 Age-stratified infection fatality ratio as output from a single simulation in a population of 1 million with UK-like demography and control interventions.  
 
 
-![./figures/fig6_ifr.png](./figures/fig6_ifr.png)
+![./output/figures/fig6_ifr.png](./figures/fig6_ifr.png)
 
 
 ### Figure S2
 
 
-![./figures/figS2_waiting_time_distributions.png](./figures/figS2_waiting_time_distributions.png)
+![./output/figures/figS2_waiting_time_distributions.png](./output/figures/figS2_waiting_time_distributions.png)
 
 Waiting time distributions for transitions between infection and disease states.
