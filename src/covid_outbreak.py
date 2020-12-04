@@ -118,6 +118,8 @@ if __name__ == "__main__":
         et += 1
         el += 1
     
+    # >> Turn app on here if being simulated (a week before the end of lockdown)
+    
     while el < args.lockdown_duration:
         sim.steps(1)
         et += 1
