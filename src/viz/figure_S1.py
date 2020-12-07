@@ -113,5 +113,5 @@ if __name__ == "__main__":
         NBINS = len(AgeGroupEnum), density = True, xticklabels = age_group_labels, 
         xlabel = "Age group", ylim = 0.5, age_group_var = "age_group_recipient")
     
-    plt.savefig(join(output_dir, "figS1_H_ICU_D"))
+    plt.savefig(join(output_dir, "figS2_H_ICU_D"))
     plt.close()
