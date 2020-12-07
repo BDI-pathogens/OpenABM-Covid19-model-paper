@@ -1,5 +1,7 @@
-.PHONY: all data figure2 figure3 figure5 table1 figureS1 \
-	figureS2 figureS3 figureS4 tableS1 figure_generation_time
+.PHONY: all data figure2 figure3 figure4 table1 figureS1_S2 \
+	figureS3 figureS4 figureS13 table1 figure_generation_time
+
+figure_format="png"
 
 ####################
 # Complete analysis
@@ -8,27 +10,27 @@
 all: data
 	make figure2
 	make figure3
-	make figure5
+	make figure4
 	make table1
-	make figureS1
-	make figureS2
+	make figureS1_S2
 	make figureS3
 	make figureS4
+	make figureS13
 	make figure_generation_time
-	make tableS1
+	make table1
 
 # Without data-generation prerequisite
 all_output:
 	make figure2
 	make figure3
-	make figure5
+	make figure4
 	make table1
-	make figureS1
-	make figureS2
+	make figureS1_S2
 	make figureS3
 	make figureS4
+	make figureS13
 	make figure_generation_time
-	make tableS1
+	make table1
 
 ####################
 # Generate the data
@@ -66,28 +68,31 @@ data:
 # Main figures
 # ---------------------
 
-# figure 1 is a schematic of networks
+# figure 1 is a schematic of the networks
 
 figure2:
 	python src/viz/figure_2.py \
 		"data/interactions_Run1.csv" \
 		"data/individual_file_Run1.csv" \
 		"output/figures" \
-		"png"
+		$(figure_format)
 
 figure3:
 	python src/viz/transmission_heatmap_by_age_by_infectiousness.py \
 		"data/transmission_Run1.csv" \
 		"output/figures/fig3_transmission_matrix_by_age_by_infectiousness" \
-		"png"
+		$(figure_format)
 
-# figure 4 is a schematic of the model
 
-figure5:
+figure4:
 	python src/viz/ifr_hist_by_age.py \
 		"data/transmission_Run1.csv" \
-		"output/figures/fig5_ifr_by_age" \
-		"png"
+		"output/figures/fig4_ifr_by_age" \
+		$(figure_format)
+
+
+# figure 5 is a fit of the baseline parameters to observed data (using another repo)
+# figure 6 is a schematic of the model
 
 #######################
 # Main tables
@@ -102,42 +107,42 @@ table1:
 # Supplementary figures
 # ---------------------
 
-figureS1:
+figureS1_S2:
 	python src/viz/figure_S1.py \
 		"data/transmission_Run1.csv" \
 		"data/individual_file_Run1.csv" \
 		"output/figures/" \
-		"png"
+		$(figure_format)
 
-figureS2:
+figureS3:
 	python src/viz/waiting_time_distributions.py \
 		"OpenABM-Covid19/tests/data/baseline_parameters.csv" \
-		"output/figures/figS2_waiting_time_distributions" \
-		"png"
+		"output/figures/figS3_waiting_time_distributions" \
+		$(figure_format)
 
 
 app_uptake=0.6
-figureS3:
+figureS4:
 	Rscript src/viz/histogram_app_uptake.R \
 		$(app_uptake) \
 		"OpenABM-Covid19/tests/data/baseline_parameters_transpose.csv" \
-		"output/figures/figS3_histogram_app_uptake" \
-		"png"
+		"output/figures/figS4_histogram_app_uptake" \
+		$(figure_format)
 
 
-figureS4:
+figureS13:
 	python src/viz/plot_R_timeseries.py \
 		"data/transmission_Run1.csv" \
 		"data/covid_timeseries_Run1.csv" \
 		"OpenABM-Covid19/tests/data/baseline_parameters.csv" \
-		"output/figures/figS4_actual_R" \
-		"png"
+		"output/figures/figS13_actual_R" \
+		$(figure_format)
 
 #######################
 # Supplementary tables
 # ---------------------
 
-tableS1:
+table1:
 	python src/analysis/table_ifr_by_age.py \
 		"data/transmission_Run1.csv" \
 		"output/tables/tab1_ifr_by_age.csv"
@@ -152,4 +157,4 @@ figure_generation_time:
 		"data/transmission_Run1.csv" \
 		"data/covid_timeseries_Run1.csv" \
 		"output/figures/generation_time_by_infectiousness" \
-		"png"
+		$(figure_format)
