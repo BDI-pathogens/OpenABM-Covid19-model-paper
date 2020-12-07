@@ -92,11 +92,11 @@ Waiting time distributions for transitions between infection and disease states.
 
 ![./output/figures/figS3_waiting_time_distributions.png](./output/figures/figS3_waiting_time_distributions.png)
 
-### Figure S3
+### Figure S4
 
 App uptake
 
-![./output/figures/figS3_histogram_app_uptake.png](./output/figures/figS3_histogram_app_uptake.png)
+![./output/figures/figS4_histogram_app_uptake.png](./output/figures/figS4_histogram_app_uptake.png)
 
 ### Figure S13
 
