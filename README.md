@@ -80,11 +80,11 @@ Figure 6 is a schematic representation of the different infectiousness and disea
 
 ### Figure S1
 
-![./output/figures/figS1_H_ICU_D.png](./output/figures/figS1_I_H_D.png)
+![./output/figures/figS1_I_H_D.png](./output/figures/figS1_I_H_D.png)
 
 ### Figure S2
 
-![./output/figures/figS1_H_ICU_D.png](./output/figures/figS2_H_ICU_D.png)
+![./output/figures/figS2_H_ICU_D.png](./output/figures/figS2_H_ICU_D.png)
 
 ### Figure S3
 
