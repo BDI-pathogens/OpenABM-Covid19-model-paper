@@ -61,38 +61,36 @@ Heatmap of transmission events between different age groups for different infect
 
 ![output/figures/fig3_transmission_matrix_by_age_by_infectiousness.png](output/figures/fig3_transmission_matrix_by_age_by_infectiousness.png)
 
+
+
 ### Figure 4
-
-Figure 4 is a schematic representation of the different infectiousness and disease compartments in the model.  
-
-
-### Figure 5
 
 Age-stratified infection fatality ratio as output from a single simulation in a population of 1 million with UK-like demography and control interventions.  
 
 
-![./output/figures/fig5_ifr_by_age.png](./output/figures/fig5_ifr_by_age.png)
+![./output/figures/fig4_ifr_by_age.png](./output/figures/fig4_ifr_by_age.png)
 
+### Figure 5
+
+Figure 5 is a fit of the model using baseline parameters to observed data for England and Wales (using minimal calibration).  
+
+### Figure 6
+
+Figure 6 is a schematic representation of the different infectiousness and disease compartments in the model.  
 
 ### Figure S1
 
-![./output/figures/figS1_H_ICU_D.png](./output/figures/figS1_H_ICU_D.png)
-
+![./output/figures/figS1_H_ICU_D.png](./output/figures/figS1_I_H_D.png)
 
 ### Figure S2
+
+![./output/figures/figS1_H_ICU_D.png](./output/figures/figS2_H_ICU_D.png)
+
+### Figure S3
 
 Waiting time distributions for transitions between infection and disease states.
 
-![./output/figures/figS2_waiting_time_distributions.png](./output/figures/figS2_waiting_time_distributions.png)
-
-
-
-### Figure S2
-
-Waiting time distributions used within OpenABM-Covid19
-
-![./output/figures/figS2_waiting_time_distributions.png](./output/figures/figS2_waiting_time_distributions.png)
-
+![./output/figures/figS3_waiting_time_distributions.png](./output/figures/figS3_waiting_time_distributions.png)
 
 ### Figure S3
 
@@ -100,9 +98,9 @@ App uptake
 
 ![./output/figures/figS3_histogram_app_uptake.png](./output/figures/figS3_histogram_app_uptake.png)
 
-### Figure S4
+### Figure S13
 
 Reproduction number calculated from the transmission file and timeseries file
 
-![./output/figures/figS4_actual_R.png](./output/figures/figS4_actual_R.png)
+![./output/figures/figS13_actual_R.png](./output/figures/figS13_actual_R.png)
 
