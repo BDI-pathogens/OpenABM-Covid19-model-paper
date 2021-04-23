@@ -1,5 +1,5 @@
 .PHONY: all data figure2 figure3 figure4 table1 figureS1_S2 \
-	figureS3 figureS4 figureS13 table1 figure_generation_time
+	figureS3 figureS4 figureS13 figure_generation_time
 
 figure_format="png"
 
@@ -17,10 +17,9 @@ all: data
 	make figureS4
 	make figureS13
 	make figure_generation_time
-	make table1
 
 # Without data-generation prerequisite
-all_output:
+all_output: 
 	make figure2
 	make figure3
 	make figure4
@@ -30,7 +29,6 @@ all_output:
 	make figureS4
 	make figureS13
 	make figure_generation_time
-	make table1
 
 ####################
 # Generate the data
@@ -47,9 +45,9 @@ hospital_file="$(model_dir)/tests/data/hospital_baseline_parameters.csv"
 # Simulation parameters
 n_total=1000000                              # Population size to simulate
 rng_seed=2020                                # Random seed to use in the simulation
-lockdown_duration=70                         # Lockdown duration
-lockdown_prevalence_trigger=2                # Prevalence (%) at which point lockdown is triggered
-intervention_prevalence_trigger=0.5          # Prevalence (%) at which point self-isolation on symptoms and positive test is triggered
+lockdown_duration=77                         # Lockdown duration
+lockdown_prevalence_trigger=1.55                # Prevalence (%) at which point lockdown is triggered
+intervention_prevalence_trigger=0.3875          # Prevalence (%) at which point self-isolation on symptoms and positive test is triggered
 intervention_self_quarantine_fraction=0.65   # Proportion of symptomatics that self-isolate on symptoms
 
 data:
@@ -137,16 +135,6 @@ figureS13:
 		"OpenABM-Covid19/tests/data/baseline_parameters.csv" \
 		"output/figures/figS13_actual_R" \
 		$(figure_format)
-
-#######################
-# Supplementary tables
-# ---------------------
-
-table1:
-	python src/analysis/table_ifr_by_age.py \
-		"data/transmission_Run1.csv" \
-		"output/tables/tab1_ifr_by_age.csv"
-
 
 #######################
 # Miscellaneous figures
