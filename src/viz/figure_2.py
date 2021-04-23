@@ -48,21 +48,50 @@ if __name__ == "__main__":
     # Count interactions for each individual by "type" of interaction
     df_agg = df_interact.groupby(["ID_1", "type"]).size().reset_index(name = "counts")
     
-    fig, ax = plt.subplots()
-    plotting.plot_hist_by_group(ax, df_agg, 
-        groupvar = "type", 
-        binvar = "counts", 
-        groups = constants.interaction_types, 
-        bins = bin_edges, 
-        group_colours = plotting.network_colours, 
-        group_labels = constants.interaction_labels, 
-        xlimits = [-1, 30], 
-        xlabel = "", 
-        title = "", 
-        legend_title = "Network", 
-        xticklabels = [],
-        normalising_constant = n_total/100)
+    fig, ax = plt.subplots(nrows = 3)
+
+    df = df_agg
+    groupvar = "type"
+    binvar = "counts"
+    groups = constants.interaction_types
+    bins = bin_edges 
+    group_colours = plotting.network_colours
+    group_labels = constants.interaction_labels
+    normalising_constant = n_total/100
+    groups = df[groupvar].unique()
+    density = False
+    legend_title = ""
+    width = 0.8
+    n_groups = len(groups)
     
+    for i, g in enumerate(groups):
+        heights, b = np.histogram(df.loc[df[groupvar] == g][binvar], bins, density = density)
+        
+        if normalising_constant:
+            heights = heights/float(normalising_constant)
+        
+        ax[i].bar(bins[:-1], heights, width = width, 
+            facecolor = "#0072B2", edgecolor = "#0072B2", linewidth = 0.5, zorder = 3)
+
+        ax[i].text(0.75, 0.4, group_labels[i], 
+            ha = 'left', va = 'bottom', 
+            transform = ax[i].transAxes, fontsize = 16)
+    
+        plotting.remove_spines(ax[i], ["top", "right"])
+    
+        ax[i].set_xlabel("")
+        ax[i].set_ylabel("")
+        ax[i].set_title("")
+        ax[i].set_xlim([-1, 30])
+        ax[i].set_xticklabels([])
+        ax[i].set_ylim([0, 35])
+        
+        for tick in ax[i].xaxis.get_major_ticks():
+            tick.label.set_fontsize(14)
+        
+        for tick in ax[i].yaxis.get_major_ticks():
+            tick.label.set_fontsize(10)
+
     plt.savefig(join(output_dir, "fig2a_daily_interactions_by_network"))
     plt.close()
     
