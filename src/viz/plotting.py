@@ -37,6 +37,36 @@ EVENT_TYPE_STRING = {
     18: "Transition to critical",
     19: "N event types"
 }
+    # 0: "Susceptible",
+    # 1: "Presymptomatic (severe)",
+    # PRESYMPTOMATIC_MILD,
+    # ASYMPTOMATIC,
+    # SYMPTOMATIC,
+    # SYMPTOMATIC_MILD,
+    # HOSPITALISED,
+    # CRITICAL,
+    # HOSPITALISED_RECOVERING,
+    # RECOVERED,
+    # DEATH,
+    # QUARANTINED,
+    # QUARANTINE_RELEASE,
+    # TEST_TAKE,
+    # TEST_RESULT,
+    # CASE,
+    # TRACE_TOKEN_RELEASE,
+    # NOT_IN_HOSPITAL,
+    # WAITING,
+    # GENERAL,
+    # ICU,
+    # MORTUARY,
+    # DISCHARGED,
+    # MANUAL_CONTACT_TRACING,
+    # TRANSITION_TO_HOSPITAL,
+    # TRANSITION_TO_CRITICAL,
+    # VACCINE_PROTECT,
+    # VACCINE_WANE,
+
+
 
 
 def gamma_params(mn, sd):
@@ -155,8 +185,6 @@ def plot_hist_by_group(ax, df, groupvar, binvar, bins = None, groups = None,
     ax.set_xlabel(xlabel, size = 18)
     ax.set_ylabel(ylabel, size = 18)
     ax.set_title(title, size = 20)
-    
-    #ax.set_yticks([0, 150000, 300000])
     
     if xlimits is not None:
         ax.set_xlim(xlimits)
@@ -563,7 +591,7 @@ def plot_hist_by_age(df,
             width = 0.8, color = "#0072B2", edgecolor = "#0d1a26", 
             linewidth = 0.5, zorder = 3, density = density)
         
-        ax[axi].set_xlim([0, np.max(bins)])
+        ax[axi].set_xlim([-0.5, np.max(bins)])
         ax[axi].set_ylim([0, ylim])
         
         remove_spines(ax[axi], ["top", "right"])
@@ -580,7 +608,7 @@ def plot_hist_by_age(df,
         else:
             ax[axi].set_xticks(bins + 0.45)
             ax[axi].set_xticks([])
-            ax[axi].set_yticklabels(bins, size = 12)
+            ax[axi].set_xticklabels(bins, size = 12)
     
     ax[n_groups - 1].set_xlabel(xlabel, size = 18)
     
