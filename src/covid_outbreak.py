@@ -48,11 +48,11 @@ if __name__ == "__main__":
         default = 2)
 
     parser.add_argument("--lockdown_duration", type = int,
-        help = "Duration of lockdown (days)", default = 70)
+        help = "Duration of lockdown (days)", default = 77)
 
     parser.add_argument("--intervention_prevalence_trigger", type = float,
         help = "Prevalence (%) of SARS-CoV-2 in popn at which point self-isolation on symptoms is triggered", 
-        default = 0.5)
+        default = 1.55/4)
 
     parser.add_argument("--intervention_self_quarantine_fraction", type = float,
         help = "Fraction of symptomatics self-quarantining when interventions start", 
