@@ -8,9 +8,10 @@ library( OpenABMCovid19 )
 
 total_cases = 0.01
 t_infect = 30
+n_total = 1e6
 
 # build the model
-m = Model.new()
+m = Model.new( params = list( n_total = n_total ))
 
 # run until the relevant number of parents have been infected
 while( TRUE )
